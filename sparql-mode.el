@@ -31,9 +31,9 @@
   "Returns the base URL for SPARQL queries in this buffer unless it has not been set, in which case it prompts the user."
   (if sparql-base-url
       sparql-base-url
-    (setq sparql-base-url 
+    (setq sparql-base-url
           (read-string
-           (format "SPARQL URL (%s): " sparql-default-base-url) 
+           (format "SPARQL URL (%s): " sparql-default-base-url)
            nil
            nil
            sparql-default-base-url))))
@@ -49,7 +49,7 @@ If the region is not active, use the whole buffer."
          ;; TODO: Stop hardcoding this at some point
          (url (format "%s?format=csv&query=%s"
                       (sparql-get-base-url) escaped-text))
-         (b (url-retrieve url 
+         (b (url-retrieve url
                           #'(lambda (status &rest cbargs)))))
     (switch-to-buffer-other-window b)))
 
