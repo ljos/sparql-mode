@@ -74,8 +74,9 @@ If the region is not active, use the whole buffer."
    'words))
 
 (defconst sparql-keywords
-  `(("#.*$" . font-lock-comment-face)
-    (,sparql-keywords-re . font-lock-keyword-face)
+  `(("<.*>" . font-lock-constant-face)
+    ("#.*$" . font-lock-comment-face)
+    ,sparql-keywords-re
     ("\\?\\w+" . font-lock-variable-name-face)
     ("\"[^\"]*\"" . font-lock-string-face)
     ("'[^']*'" . font-lock-string-face)))
