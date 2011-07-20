@@ -25,8 +25,6 @@
   (interactive "sNew base URL for queries: ")
   (setq sparql-base-url url))
 
-(make-variable-buffer-local 'sparql-base-url)
-
 (defun sparql-get-base-url ()
   "Returns the base URL for SPARQL queries in this buffer unless it has not been set, in which case it prompts the user."
   (if sparql-base-url
@@ -85,6 +83,7 @@ If the region is not active, use the whole buffer."
 (define-derived-mode sparql-mode text-mode
   "SPARQL"
   :group 'sparql-mode
+  (make-local-variable 'sparql-base-url)
   (setq font-lock-defaults '(sparql-keywords))
   (define-key sparql-mode-map (kbd "C-c x") 'sparql-query-region))
 
