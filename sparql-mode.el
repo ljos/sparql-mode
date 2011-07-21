@@ -17,7 +17,7 @@
                    (encode-coding-string str 'utf-8))))
 
 (defvar sparql-base-url nil)
-(defconst sparql-default-base-url  "http://localhost:2020/metamodl_test")
+(defvar sparql-default-base-url  "http://localhost:2020/")
 
 (defun sparql-set-base-url (url)
   "Sets the base URL for queries"
