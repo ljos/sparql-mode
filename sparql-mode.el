@@ -85,7 +85,12 @@ If the region is not active, use the whole buffer."
   "SPARQL"
   :group 'sparql-mode
   (make-local-variable 'sparql-base-url)
+  ;; Comments
+  (make-local-variable 'comment-start)
+  (setq comment-start "# ")
+  ;; Font-lock support
   (setq font-lock-defaults '(sparql-keywords))
+  ;; Key maps
   (define-key sparql-mode-map (kbd "C-c C-x") 'sparql-query-region))
 
 (provide 'sparql-mode)
