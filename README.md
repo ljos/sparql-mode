@@ -15,7 +15,7 @@ by [Joseki](http://www.joseki.org/).
 (autoload 'sparql-mode "sparql-mode.el"
   "Major mode for editing SPARQL files" t)
 (add-to-list 'auto-mode-alist '("\\.sparql$" . sparql-mode))
-```elisp
+```
   
 Now sparql-mode will load whenever you visit a file whose name ends
 with .sparql. Alternatively, run `M-x sparql-mode` in an existing
