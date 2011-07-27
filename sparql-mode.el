@@ -16,6 +16,7 @@
                               (format "%%%02x" c)))
                    (encode-coding-string str 'utf-8))))
 
+(defvar sparql-results-buffer nil)
 (defvar sparql-base-url nil)
 (defvar sparql-default-base-url  "http://localhost:2020/")
 
@@ -36,6 +37,17 @@
            nil
            sparql-default-base-url))))
 
+(defun sparql-handle-results (status &optional sparql-results-buffer)
+  "Handles the results that come back from url-retrieve for a
+SPARQL query."
+  (let ((http-results-buffer (current-buffer)))
+    (set-buffer sparql-results-buffer)
+    (let ((buffer-read-only nil))
+      (delete-region (point-min) (point-max))
+      (insert-buffer-substring http-results-buffer)
+      (goto-char (point-min))))
+  (view-buffer-other-window sparql-results-buffer))
+
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
 If the region is not active, use the whole buffer."
@@ -46,10 +58,8 @@ If the region is not active, use the whole buffer."
          (escaped-text (http-url-encode text))
          ;; TODO: Stop hardcoding this at some point
          (url (format "%s?format=csv&query=%s"
-                      (sparql-get-base-url) escaped-text))
-         (b (url-retrieve url
-                          #'(lambda (status &rest cbargs)))))
-    (switch-to-buffer-other-window b)))
+                      (sparql-get-base-url) escaped-text)))
+    (url-retrieve url #'sparql-handle-results (list sparql-results-buffer))))
 
 (defconst sparql-keywords-re
   (regexp-opt
@@ -85,6 +95,12 @@ If the region is not active, use the whole buffer."
   "SPARQL"
   :group 'sparql-mode
   (make-local-variable 'sparql-base-url)
+  ;; Results buffer
+  (set (make-local-variable 'sparql-results-buffer)
+       (generate-new-buffer (format "*SPARQL: %s*" (buffer-name))))
+  (save-current-buffer
+    (set-buffer sparql-results-buffer)
+    (setq buffer-read-only t))
   ;; Comments
   (make-local-variable 'comment-start)
   (setq comment-start "# ")
