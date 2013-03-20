@@ -69,7 +69,7 @@ If the region is not active, use the whole buffer."
      "REDUCED"
      "SELECT" "SERVICE" "SILENT"
      "TO"
-     "UNDEF" "USING"
+     "UNDEF" "UNION" "USING"
      "WHERE" "WITH")
    'words))
 
