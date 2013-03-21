@@ -4,6 +4,25 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defgroup sparql nil
+  "Major mode for editing and evaluating SPARQL queries."
+  )
+
+(defcustom sparql-default-base-url "http://localhost:2020/"
+  "The default URL of the SPARQL endpoint."
+  :group 'sparql
+  :type 'string)
+
+(defcustom sparql-default-format "csv"
+  "The default format of the returned results."
+  :group 'sparql
+  :type 'string)
+
+(defcustom sparql-prompt-format nil
+  "Non-nil means prompt user for requested format on each query evaluation."
+  :group 'sparql
+  :type 'boolean)
+
 ;; URL encoding for parameters
 (defun http-url-encode (str)
   "URL encode STR."
@@ -17,7 +36,7 @@
                    (encode-coding-string str 'utf-8))))
 
 (defvar sparql-base-url nil)
-(defvar sparql-default-base-url  "http://localhost:2020/")
+(defvar sparql-format nil)
 
 (defun sparql-set-base-url (url)
   "Sets the base URL for queries"
@@ -36,6 +55,22 @@
            nil
            sparql-default-base-url))))
 
+(defun sparql-get-format ()
+  "Returns the requested result format for queries in this buffer unless it has not been set, in which case it prompts the user."
+  (if sparql-format
+      (setq sparql-format
+	    (read-string
+	     (format "Format (%s): " sparql-format)
+	     nil
+	     nil
+	     sparql-format))
+    (setq sparql-format
+	  (read-string
+	   (format "Format (%s): " sparql-default-format)
+	   nil
+	   nil
+	   sparql-default-format))))
+
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
 If the region is not active, use the whole buffer."
@@ -45,8 +80,10 @@ If the region is not active, use the whole buffer."
          (text (buffer-substring beg end))
          (escaped-text (http-url-encode text))
          ;; TODO: Stop hardcoding this at some point
-         (url (format "%s?format=csv&query=%s"
-                      (sparql-get-base-url) escaped-text))
+         (url (format "%s?format=%s&query=%s"
+                      (sparql-get-base-url)
+		      (if sparql-prompt-format (sparql-get-format) sparql-default-format)
+		      escaped-text))
          (b (url-retrieve url
                           #'(lambda (status &rest cbargs)))))
     (switch-to-buffer-other-window b)))
