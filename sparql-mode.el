@@ -1,8 +1,56 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Interactively evaluate SPARQL
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; sparql-mode.el --- Interactively evaluate SPARQL
+
+;; Copyright (C) 2011  Craig Andera
+;; Copyright (C) 2013  Marcus Nitzschke
+
+;; Author: Craig Andera <candera@wangdera.com>
+;; Version: 0.0.1
+
+;; This file is not part of GNU Emacs.
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; Usage:
+
+;; Add to your emacs config:
+
+;;  (add-to-list 'load-path "/path/to/sparql-mode-dir")
+;;  (autoload 'sparql-mode "sparql-mode.el"
+;;   "Major mode for editing SPARQL files" t)
+;;  (add-to-list 'auto-mode-alist '("\\.sparql$" . sparql-mode))
+
+
+(defgroup sparql nil
+  "Major mode for editing and evaluating SPARQL queries."
+  )
+
+(defcustom sparql-default-base-url "http://localhost:2020/"
+  "The default URL of the SPARQL endpoint."
+  :group 'sparql
+  :type 'string)
+
+(defcustom sparql-default-format "csv"
+  "The default format of the returned results."
+  :group 'sparql
+  :type 'string)
+
+(defcustom sparql-prompt-format nil
+  "Non-nil means prompt user for requested format on each query evaluation."
+  :group 'sparql
+  :type 'boolean)
 
 ;; URL encoding for parameters
 (defun http-url-encode (str)
@@ -17,7 +65,7 @@
                    (encode-coding-string str 'utf-8))))
 
 (defvar sparql-base-url nil)
-(defvar sparql-default-base-url  "http://localhost:2020/")
+(defvar sparql-format nil)
 
 (defun sparql-set-base-url (url)
   "Sets the base URL for queries"
@@ -36,6 +84,22 @@
            nil
            sparql-default-base-url))))
 
+(defun sparql-get-format ()
+  "Returns the requested result format for queries in this buffer unless it has not been set, in which case it prompts the user."
+  (if sparql-format
+      (setq sparql-format
+	    (read-string
+	     (format "Format (%s): " sparql-format)
+	     nil
+	     nil
+	     sparql-format))
+    (setq sparql-format
+	  (read-string
+	   (format "Format (%s): " sparql-default-format)
+	   nil
+	   nil
+	   sparql-default-format))))
+
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
 If the region is not active, use the whole buffer."
@@ -45,8 +109,10 @@ If the region is not active, use the whole buffer."
          (text (buffer-substring beg end))
          (escaped-text (http-url-encode text))
          ;; TODO: Stop hardcoding this at some point
-         (url (format "%s?format=csv&query=%s"
-                      (sparql-get-base-url) escaped-text))
+         (url (format "%s?format=%s&query=%s"
+                      (sparql-get-base-url)
+		      (if sparql-prompt-format (sparql-get-format) sparql-default-format)
+		      escaped-text))
          (b (url-retrieve url
                           #'(lambda (status &rest cbargs)))))
     (switch-to-buffer-other-window b)))
@@ -69,7 +135,7 @@ If the region is not active, use the whole buffer."
      "REDUCED"
      "SELECT" "SERVICE" "SILENT"
      "TO"
-     "UNDEF" "USING"
+     "UNDEF" "UNION" "USING"
      "WHERE" "WITH")
    'words))
 
@@ -94,3 +160,5 @@ If the region is not active, use the whole buffer."
   (define-key sparql-mode-map (kbd "C-c C-x") 'sparql-query-region))
 
 (provide 'sparql-mode)
+
+;;; sparql-mode.el ends here
