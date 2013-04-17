@@ -147,6 +147,32 @@ If the region is not active, use the whole buffer."
     ("\"[^\"]*\"" . font-lock-string-face)
     ("'[^']*'" . font-lock-string-face)))
 
+(defvar sparql-indent-offset 2
+  "*Indentation offset for `sparql-mode'")
+
+(defun sparql-indent-line ()
+  "Indent current line as a sparql expression."
+  (interactive)
+  (back-to-indentation)
+  (let ((indent-column 0))
+    (save-excursion
+      (ignore-errors
+        (while (= 0 indent-column)
+          (backward-up-list)
+          (when (looking-at "{")
+            (setq indent-column
+                  (+ (current-indentation)
+                     sparql-indent-offset)))
+          (when (looking-at "(")
+            (setq indent-column
+                  (1+ (current-column)))))))
+    (save-excursion
+      (when (looking-at "}")
+        (setq indent-column
+              (- indent-column
+                 sparql-indent-offset))))
+    (indent-line-to indent-column)))
+
 (define-derived-mode sparql-mode text-mode
   "SPARQL"
   :group 'sparql-mode
@@ -154,6 +180,8 @@ If the region is not active, use the whole buffer."
   ;; Comments
   (make-local-variable 'comment-start)
   (setq comment-start "# ")
+  ;; Indentation
+  (set (make-local-variable 'indent-line-function) 'sparql-indent-line)
   ;; Font-lock support
   (setq font-lock-defaults '(sparql-keywords))
   ;; Key maps
