@@ -41,6 +41,11 @@
 (defgroup sparql nil
   "Major mode for editing and evaluating SPARQL queries.")
 
+(defcustom sparql-indent-offset 2
+  "*Indentation offset for `sparql-mode'"
+  :group 'sparql
+  :type 'integer)
+
 (defcustom sparql-default-base-url "http://localhost:2020/"
   "The default URL of the SPARQL endpoint."
   :group 'sparql
@@ -171,9 +176,6 @@ If the region is not active, use the whole buffer."
     ("\\?\\w+" . font-lock-variable-name-face)
     ("\"[^\"]*\"" . font-lock-string-face)
     ("'[^']*'" . font-lock-string-face)))
-
-(defvar sparql-indent-offset 2
-  "*Indentation offset for `sparql-mode'")
 
 (defun sparql-indent-line ()
   "Indent current line as a sparql expression."
