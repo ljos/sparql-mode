@@ -181,6 +181,8 @@ If the region is not active, use the whole buffer."
                  sparql-indent-offset))))
     (indent-line-to indent-column)))
 
+
+;;;###autoload
 (define-derived-mode sparql-mode text-mode "SPARQL"
   :group 'sparql-mode
   (make-local-variable 'sparql-base-url)
