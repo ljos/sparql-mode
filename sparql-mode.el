@@ -48,7 +48,8 @@
   :type 'string)
 
 (defcustom sparql-prompt-format nil
-  "Non-nil means prompt user for requested format on each query evaluation."
+  "Non-nil means prompt user for requested format
+ on each query evaluation."
   :group 'sparql
   :type 'boolean)
 
@@ -74,7 +75,8 @@
   (setq sparql-base-url url))
 
 (defun sparql-get-base-url ()
-  "Returns the base URL for SPARQL queries in this buffer unless it has not been set, in which case it prompts the user."
+  "Returns the base URL for SPARQL queries in this buffer unless
+it has not been set, in which case it prompts the user."
   (if sparql-base-url
       sparql-base-url
     (setq sparql-base-url
@@ -85,7 +87,8 @@
            sparql-default-base-url))))
 
 (defun sparql-get-format ()
-  "Returns the requested result format for queries in this buffer unless it has not been set, in which case it prompts the user."
+  "Returns the requested result format for queries in this buffer
+unless it has not been set, in which case it prompts the user."
   (if sparql-format
       (setq sparql-format
 	    (read-string
@@ -173,8 +176,7 @@ If the region is not active, use the whole buffer."
                  sparql-indent-offset))))
     (indent-line-to indent-column)))
 
-(define-derived-mode sparql-mode text-mode
-  "SPARQL"
+(define-derived-mode sparql-mode text-mode "SPARQL"
   :group 'sparql-mode
   (make-local-variable 'sparql-base-url)
   ;; Comments
