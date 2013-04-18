@@ -74,6 +74,7 @@
                      (format "%%%02x" c)))
                  (encode-coding-string str 'utf-8))))
 
+(defvar sparql-results-buffer nil)
 (defvar sparql-base-url nil)
 (defvar sparql-format nil)
 
@@ -106,6 +107,18 @@ unless it has not been set, in which case it prompts the user."
            nil
            current-format))))
 
+(defun sparql-handle-results (status &optional sparql-results-buffer)
+  "Handles the results that come back from url-retrieve for a
+SPARQL query."
+  (let ((http-results-buffer (current-buffer)))
+    (set-buffer sparql-results-buffer)
+    (let ((buffer-read-only nil))
+      (delete-region (point-min) (point-max))
+      (insert-buffer-substring http-results-buffer)
+      (kill-buffer http-results-buffer)
+      (goto-char (point-min))
+      (setq mode-name "SPARQL[finished]"))))
+
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
 If the region is not active, use the whole buffer."
@@ -118,9 +131,16 @@ If the region is not active, use the whole buffer."
           `(("Content-Type" . "application/x-www-form-urlencoded")
             ("Accept" . ,(sparql-get-format))))
          (url-request-data (format "query=%s" (http-url-encode text)))
-         (url (sparql-get-base-url))
-         (b (url-retrieve url #'(lambda (status &rest cbargs)))))
-    (switch-to-buffer-other-window b)))
+         (url (sparql-get-base-url)))
+    (setq sparql-results-buffer
+          (generate-new-buffer (format "*SPARQL: %s*" (buffer-name))))
+      (save-current-buffer
+        (set-buffer sparql-results-buffer)
+        (sparql-result-mode)
+        (setq buffer-read-only t))
+    (url-retrieve url 'sparql-handle-results (list sparql-results-buffer))
+    (view-buffer-other-window sparql-results-buffer)
+    (other-window -1)))
 
 (defconst sparql-keywords-re
   (regexp-opt
@@ -178,11 +198,14 @@ If the region is not active, use the whole buffer."
                  sparql-indent-offset))))
     (indent-line-to indent-column)))
 
+(define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]")
 
 ;;;###autoload
 (define-derived-mode sparql-mode text-mode "SPARQL"
   :group 'sparql-mode
   (make-local-variable 'sparql-base-url)
+  ;; Results buffer
+  (make-local-variable 'sparql-results-buffer)
   ;; Comments
   (set (make-local-variable 'comment-start) "# ")
   ;; Indentation
