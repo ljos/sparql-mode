@@ -86,13 +86,13 @@
 
 (defun sparql-get-format ()
   "Returns the requested result format for queries in this buffer unless it has not been set, in which case it prompts the user."
-  (let ((sparql-format (or sparql-format sparql-default-format)))
+  (let ((current-format (or sparql-format sparql-default-format)))
     (setq sparql-format
           (read-string
-           (format "Format (%s): " sparql-default-format)
+           (format "Format (%s): " current-format)
            nil
            nil
-           sparql-default-format))))
+           current-format))))
 
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
