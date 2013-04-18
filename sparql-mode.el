@@ -39,8 +39,7 @@
 
 
 (defgroup sparql nil
-  "Major mode for editing and evaluating SPARQL queries."
-  )
+  "Major mode for editing and evaluating SPARQL queries.")
 
 (defcustom sparql-default-base-url "http://localhost:2020/"
   "The default URL of the SPARQL endpoint."
@@ -67,13 +66,13 @@
 (defun http-url-encode (str)
   "URL encode STR."
   (apply 'concat
-          (mapcar (lambda (c)
-                       (if (or (and (>= c ?a) (<= c ?z))
-                                  (and (>= c ?A) (<= c ?Z))
-                                     (and (>= c ?0) (<= c ?9)))
-                                  (string c)
-                              (format "%%%02x" c)))
-                   (encode-coding-string str 'utf-8))))
+         (mapcar (lambda (c)
+                   (if (or (and (>= c ?a) (<= c ?z))
+                           (and (>= c ?A) (<= c ?Z))
+                           (and (>= c ?0) (<= c ?9)))
+                       (string c)
+                     (format "%%%02x" c)))
+                 (encode-coding-string str 'utf-8))))
 
 (defvar sparql-base-url nil)
 (defvar sparql-format nil)
@@ -120,8 +119,7 @@ If the region is not active, use the whole buffer."
             ("Accept" . ,(sparql-get-format))))
          (url-request-data (format "query=%s" (http-url-encode text)))
          (url (sparql-get-base-url))
-         (b (url-retrieve url
-                          #'(lambda (status &rest cbargs)))))
+         (b (url-retrieve url #'(lambda (status &rest cbargs)))))
     (switch-to-buffer-other-window b)))
 
 (defconst sparql-keywords-re
