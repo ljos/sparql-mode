@@ -4,7 +4,7 @@ A major mode for emacs that provides syntax highlighting for
 [SPARQL](http://www.w3.org/TR/sparql11-query/). It also provides a way
 to execute queries against a SPARQL HTTP endpoint, such as is provided
 by [Joseki](http://www.joseki.org/). It is also possible to query
-other endpoints like [DBPedia](http://dbpedia.org/sparql)
+other endpoints like [DBPedia](http://dbpedia.org/sparql).
 
 # Getting Started
 
