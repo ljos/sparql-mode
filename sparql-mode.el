@@ -42,10 +42,15 @@
   :group 'sparql
   :type 'string)
 
-(defcustom sparql-default-format "csv"
+(defcustom sparql-default-format "text/csv"
   "The default format of the returned results."
   :group 'sparql
-  :type 'string)
+  :type '(choice
+          (const :tag "Comma separated values" "text/csv")
+          (const :tag "Tab separated values" "text/tab-separated-values")
+          (const :tag "JSON" "application/sparql-results+json")
+          (const :tag "SPARQL XML" "application/sparql-results+xml")
+          (string :tag "Custom")))
 
 (defcustom sparql-prompt-format nil
   "Non-nil means prompt user for requested format on each query evaluation."
