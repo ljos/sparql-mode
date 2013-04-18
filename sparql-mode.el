@@ -101,12 +101,12 @@ If the region is not active, use the whole buffer."
   (let* ((beg (if (region-active-p) (region-beginning) (point-min)))
          (end (if (region-active-p) (region-end) (point-max)))
          (text (buffer-substring beg end))
-         (escaped-text (http-url-encode text))
-         ;; TODO: Stop hardcoding this at some point
-         (url (format "%s?format=%s&query=%s"
-                      (sparql-get-base-url)
-		      (if sparql-prompt-format (sparql-get-format) sparql-default-format)
-		      escaped-text))
+         (url-request-method "POST")
+         (url-request-extra-headers (list
+                                     (cons "Content-Type" "application/x-www-form-urlencoded")
+                                     (cons "Accept" (sparql-get-format))))
+         (url-request-data (format "query=%s" (http-url-encode text)))
+         (url (sparql-get-base-url))
          (b (url-retrieve url
                           #'(lambda (status &rest cbargs)))))
     (switch-to-buffer-other-window b)))
