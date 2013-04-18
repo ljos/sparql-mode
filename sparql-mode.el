@@ -184,8 +184,7 @@ If the region is not active, use the whole buffer."
   :group 'sparql-mode
   (make-local-variable 'sparql-base-url)
   ;; Comments
-  (make-local-variable 'comment-start)
-  (setq comment-start "# ")
+  (set (make-local-variable 'comment-start) "# ")
   ;; Indentation
   (set (make-local-variable 'indent-line-function) 'sparql-indent-line)
   ;; Font-lock support
