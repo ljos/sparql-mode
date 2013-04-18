@@ -164,13 +164,13 @@ If the region is not active, use the whole buffer."
       (ignore-errors
         (while (= 0 indent-column)
           (backward-up-list)
-          (when (looking-at "{")
-            (setq indent-column
-                  (+ (current-indentation)
-                     sparql-indent-offset)))
-          (when (looking-at "(")
-            (setq indent-column
-                  (1+ (current-column)))))))
+          (cond ((looking-at "{")
+                 (setq indent-column
+                       (+ (current-indentation)
+                          sparql-indent-offset)))
+                ((looking-at "(")
+                 (setq indent-column
+                       (1+ (current-column))))))))
     (save-excursion
       (when (looking-at "}")
         (setq indent-column
