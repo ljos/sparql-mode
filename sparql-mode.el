@@ -115,8 +115,9 @@ SPARQL query."
     (let ((buffer-read-only nil))
       (delete-region (point-min) (point-max))
       (insert-buffer-substring http-results-buffer)
-      (goto-char (point-min))))
-  (view-buffer-other-window sparql-results-buffer))
+      (kill-buffer http-results-buffer)
+      (goto-char (point-min))
+      (setq mode-name "SPARQL[finished]"))))
 
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
@@ -131,7 +132,15 @@ If the region is not active, use the whole buffer."
             ("Accept" . ,(sparql-get-format))))
          (url-request-data (format "query=%s" (http-url-encode text)))
          (url (sparql-get-base-url)))
-    (url-retrieve url #'sparql-handle-results (list sparql-results-buffer))))
+    (setq sparql-results-buffer
+          (generate-new-buffer (format "*SPARQL: %s*" (buffer-name))))
+      (save-current-buffer
+        (set-buffer sparql-results-buffer)
+        (sparql-result-mode)
+        (setq buffer-read-only t))
+    (url-retrieve url 'sparql-handle-results (list sparql-results-buffer))
+    (view-buffer-other-window sparql-results-buffer)
+    (other-window -1)))
 
 (defconst sparql-keywords-re
   (regexp-opt
@@ -189,17 +198,14 @@ If the region is not active, use the whole buffer."
                  sparql-indent-offset))))
     (indent-line-to indent-column)))
 
+(define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]")
 
 ;;;###autoload
 (define-derived-mode sparql-mode text-mode "SPARQL"
   :group 'sparql-mode
   (make-local-variable 'sparql-base-url)
   ;; Results buffer
-  (set (make-local-variable 'sparql-results-buffer)
-       (generate-new-buffer (format "*SPARQL: %s*" (buffer-name))))
-  (save-current-buffer
-    (set-buffer sparql-results-buffer)
-    (setq buffer-read-only t))
+  (make-local-variable 'sparql-results-buffer)
   ;; Comments
   (make-local-variable 'comment-start)
   (setq comment-start "# ")
