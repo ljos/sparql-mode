@@ -47,10 +47,15 @@
   :group 'sparql
   :type 'string)
 
-(defcustom sparql-default-format "csv"
+(defcustom sparql-default-format "text/csv"
   "The default format of the returned results."
   :group 'sparql
-  :type 'string)
+  :type '(choice
+          (const :tag "Comma separated values" "text/csv")
+          (const :tag "Tab separated values" "text/tab-separated-values")
+          (const :tag "JSON" "application/sparql-results+json")
+          (const :tag "SPARQL XML" "application/sparql-results+xml")
+          (string :tag "Custom")))
 
 (defcustom sparql-prompt-format nil
   "Non-nil means prompt user for requested format
@@ -94,19 +99,13 @@ it has not been set, in which case it prompts the user."
 (defun sparql-get-format ()
   "Returns the requested result format for queries in this buffer
 unless it has not been set, in which case it prompts the user."
-  (if sparql-format
-      (setq sparql-format
-	    (read-string
-	     (format "Format (%s): " sparql-format)
-	     nil
-	     nil
-	     sparql-format))
+  (let ((current-format (or sparql-format sparql-default-format)))
     (setq sparql-format
-	  (read-string
-	   (format "Format (%s): " sparql-default-format)
-	   nil
-	   nil
-	   sparql-default-format))))
+          (read-string
+           (format "Format (%s): " current-format)
+           nil
+           nil
+           current-format))))
 
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
@@ -115,12 +114,12 @@ If the region is not active, use the whole buffer."
   (let* ((beg (if (region-active-p) (region-beginning) (point-min)))
          (end (if (region-active-p) (region-end) (point-max)))
          (text (buffer-substring beg end))
-         (escaped-text (http-url-encode text))
-         ;; TODO: Stop hardcoding this at some point
-         (url (format "%s?format=%s&query=%s"
-                      (sparql-get-base-url)
-		      (if sparql-prompt-format (sparql-get-format) sparql-default-format)
-		      escaped-text))
+         (url-request-method "POST")
+         (url-request-extra-headers (list
+                                     (cons "Content-Type" "application/x-www-form-urlencoded")
+                                     (cons "Accept" (sparql-get-format))))
+         (url-request-data (format "query=%s" (http-url-encode text)))
+         (url (sparql-get-base-url))
          (b (url-retrieve url
                           #'(lambda (status &rest cbargs)))))
     (switch-to-buffer-other-window b)))
