@@ -42,10 +42,14 @@
   :group 'sparql
   :type 'string)
 
-(defcustom sparql-default-format "csv"
+(defcustom sparql-default-results-format "text/csv"
   "The default format of the returned results."
   :group 'sparql
-  :type 'string)
+  :type '(choice
+          (const :tag "Comma separated values" "text/csv")
+          (const :tag "Tab separated values" "text/tab-separated-values")
+          (const :tag "JSON" "application/sparql-results+json")
+          (const :tag "SPARQL Query Results XML Format" "application/sparql-results+xml")))
 
 (defcustom sparql-prompt-format nil
   "Non-nil means prompt user for requested format on each query evaluation."
@@ -56,16 +60,16 @@
 (defun http-url-encode (str)
   "URL encode STR."
   (apply 'concat
-          (mapcar (lambda (c)
-                       (if (or (and (>= c ?a) (<= c ?z))
-                                  (and (>= c ?A) (<= c ?Z))
-                                     (and (>= c ?0) (<= c ?9)))
-                                  (string c)
-                              (format "%%%02x" c)))
-                   (encode-coding-string str 'utf-8))))
+         (mapcar (lambda (c)
+                   (if (or (and (>= c ?a) (<= c ?z))
+                           (and (>= c ?A) (<= c ?Z))
+                           (and (>= c ?0) (<= c ?9)))
+                       (string c)
+                     (format "%%%02x" c)))
+                 (encode-coding-string str 'utf-8))))
 
 (defvar sparql-base-url nil)
-(defvar sparql-format nil)
+(defvar sparql-results-format nil)
 
 (defun sparql-set-base-url (url)
   "Sets the base URL for queries"
@@ -73,8 +77,24 @@
   (interactive "sNew base URL for queries: ")
   (setq sparql-base-url url))
 
+(defun sparql-get-results-format ()
+  (if sparql-results-format
+      (setq sparql-results-format
+            (read-string
+             (format "Results format (%s): " sparql-results-format)
+             nil
+             nil
+             sparql-results-format))
+    (setq sparql-results-format
+          (read-string
+           (format "Results format (%s): " sparql-default-results-format)
+           nil
+           nil
+           sparql-default-results-format))))
+
 (defun sparql-get-base-url ()
-  "Returns the base URL for SPARQL queries in this buffer unless it has not been set, in which case it prompts the user."
+  "Returns the base URL for SPARQL queries in this buffer unless
+it has not been set, in which case it prompts the user."
   (if sparql-base-url
       sparql-base-url
     (setq sparql-base-url
@@ -84,22 +104,6 @@
            nil
            sparql-default-base-url))))
 
-(defun sparql-get-format ()
-  "Returns the requested result format for queries in this buffer unless it has not been set, in which case it prompts the user."
-  (if sparql-format
-      (setq sparql-format
-	    (read-string
-	     (format "Format (%s): " sparql-format)
-	     nil
-	     nil
-	     sparql-format))
-    (setq sparql-format
-	  (read-string
-	   (format "Format (%s): " sparql-default-format)
-	   nil
-	   nil
-	   sparql-default-format))))
-
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
 If the region is not active, use the whole buffer."
@@ -107,12 +111,12 @@ If the region is not active, use the whole buffer."
   (let* ((beg (if (region-active-p) (region-beginning) (point-min)))
          (end (if (region-active-p) (region-end) (point-max)))
          (text (buffer-substring beg end))
-         (escaped-text (http-url-encode text))
-         ;; TODO: Stop hardcoding this at some point
-         (url (format "%s?format=%s&query=%s"
-                      (sparql-get-base-url)
-		      (if sparql-prompt-format (sparql-get-format) sparql-default-format)
-		      escaped-text))
+         (url-request-method "POST")
+         (url-request-extra-headers (list
+                                     (cons "Content-Type" "application/x-www-form-urlencoded")
+                                     (cons "Accept" (sparql-get-results-format))))
+         (url-request-data (format "query=%s" (http-url-encode text)))
+         (url (sparql-get-base-url))
          (b (url-retrieve url
                           #'(lambda (status &rest cbargs)))))
     (switch-to-buffer-other-window b)))
