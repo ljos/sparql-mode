@@ -1,4 +1,4 @@
-# What It Is
+# What is it?
 
 A major mode for emacs that provides syntax highlighting for
 [SPARQL](http://www.w3.org/TR/sparql11-query/). It also provides a way
@@ -34,5 +34,5 @@ Results will be displayed in another buffer in CSV format.
 sparql-mode is currently very young, and lacks a lot of features that
 I'd like it to have. If you have a problem or would like to see it get
 better in a specific way, feel free to drop an issue in
-[the issue tracker](https://github.com/candera/sparql-mode/issues).
+[the issue tracker](https://github.com/ljos/sparql-mode/issues).
 Enjoy!
