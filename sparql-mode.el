@@ -23,6 +23,8 @@
 
 ;;; Commentary:
 
+;; Mode for editing and interactivily evaluating SPARQL queries.
+
 ;; Usage:
 
 ;; Add to your emacs config:
