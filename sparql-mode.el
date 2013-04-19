@@ -139,10 +139,10 @@ If the region is not active, use the whole buffer."
          (url (sparql-get-base-url)))
     (setq sparql-results-buffer
           (generate-new-buffer (format "*SPARQL: %s*" (buffer-name))))
-      (save-current-buffer
-        (set-buffer sparql-results-buffer)
-        (sparql-result-mode)
-        (setq buffer-read-only t))
+    (save-current-buffer
+      (set-buffer sparql-results-buffer)
+      (sparql-result-mode)
+      (setq buffer-read-only t))
     (url-retrieve url 'sparql-handle-results (list sparql-results-buffer))
     (view-buffer-other-window sparql-results-buffer)
     (other-window -1)))
