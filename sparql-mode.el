@@ -1,4 +1,4 @@
-;;; sparql-mode.el --- Interactively evaluate SPARQL
+;;; sparql-mode.el --- Edit and interactively evaluate SPARQL queries.
 
 ;; Copyright (C) 2011  Craig Andera
 ;; Copyright (C) 2013  Marcus Nitzschke
