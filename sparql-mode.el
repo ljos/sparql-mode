@@ -122,6 +122,8 @@ SPARQL query."
       (insert-buffer-substring http-results-buffer)
       (kill-buffer http-results-buffer)
       (goto-char (point-min))
+      (search-forward "\n\n")
+      (delete-region (point-min) (point))
       (setq mode-name "SPARQL[finished]"))))
 
 (defun sparql-query-region ()
