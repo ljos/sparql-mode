@@ -181,18 +181,25 @@ If the region is not active, use the whole buffer."
   "Indent current line as a sparql expression."
   (interactive)
   (back-to-indentation)
-  (let ((indent-column 0))
+  (let* ((indent-column 0)
+         (line (save-excursion
+                 (previous-line)
+                 (thing-at-point 'line)))
+         (match (string-match "[^[:space:]]+\s+[^[:space:]]+;\s*$"
+                              line)))
     (save-excursion
-      (ignore-errors
-        (while (= 0 indent-column)
-          (backward-up-list)
-          (cond ((looking-at "{")
-                 (setq indent-column
-                       (+ (current-indentation)
-                          sparql-indent-offset)))
-                ((looking-at "(")
-                 (setq indent-column
-                       (1+ (current-column))))))))
+      (if match
+          (setq indent-column match)
+          (ignore-errors
+            (while (= 0 indent-column)
+              (backward-up-list)
+              (cond ((looking-at "{")
+                     (setq indent-column
+                           (+ (current-indentation)
+                              sparql-indent-offset)))
+                    ((looking-at "(")
+                     (setq indent-column
+                           (1+ (current-column)))))))))
     (save-excursion
       (when (looking-at "}")
         (setq indent-column
