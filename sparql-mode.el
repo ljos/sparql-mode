@@ -26,7 +26,7 @@
 
 ;;; Commentary:
 
-;; Mode for editing and interactivily evaluating SPARQL queries.
+;; Mode for editing and interactively evaluating SPARQL queries.
 
 ;; Usage:
 
@@ -190,16 +190,16 @@ If the region is not active, use the whole buffer."
     (save-excursion
       (if match
           (setq indent-column match)
-          (ignore-errors
-            (while (= 0 indent-column)
-              (backward-up-list)
-              (cond ((looking-at "{")
-                     (setq indent-column
-                           (+ (current-indentation)
-                              sparql-indent-offset)))
-                    ((looking-at "(")
-                     (setq indent-column
-                           (1+ (current-column)))))))))
+        (ignore-errors
+          (while (= 0 indent-column)
+            (backward-up-list)
+            (cond ((looking-at "{")
+                   (setq indent-column
+                         (+ (current-indentation)
+                            sparql-indent-offset)))
+                  ((looking-at "(")
+                   (setq indent-column
+                         (1+ (current-column)))))))))
     (save-excursion
       (when (looking-at "}")
         (setq indent-column
