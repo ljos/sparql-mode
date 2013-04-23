@@ -124,6 +124,8 @@ SPARQL query."
       (beginning-of-buffer)
       (when (string-match "^.* 200 OK$" (thing-at-point 'line))
         (search-forward "\n\n")
+        (setq sparql-result-response
+              (buffer-substring (point-min) (point)))
         (delete-region (point-min) (point)))
       (setq mode-name "SPARQL[finished]"))))
 
@@ -211,7 +213,8 @@ If the region is not active, use the whole buffer."
                  sparql-indent-offset))))
     (indent-line-to indent-column)))
 
-(define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]")
+(define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]"
+  (make-local-variable 'sparql-result-response))
 
 ;;;###autoload
 (define-derived-mode sparql-mode text-mode "SPARQL"
