@@ -30,19 +30,21 @@
 
 ;; Usage:
 
-;; Add to your emacs config:
+;; Add to your Emacs config:
 
 ;;  (add-to-list 'load-path "/path/to/sparql-mode-dir")
 ;;  (autoload 'sparql-mode "sparql-mode.el"
 ;;   "Major mode for editing SPARQL files" t)
 ;;  (add-to-list 'auto-mode-alist '("\\.sparql$" . sparql-mode))
 
+;;; Code:
 
 (defgroup sparql nil
-  "Major mode for editing and evaluating SPARQL queries.")
+  "Major mode for editing and evaluating SPARQL queries."
+  :group 'languages)
 
 (defcustom sparql-indent-offset 2
-  "*Indentation offset for `sparql-mode'"
+  "*Indentation offset for `sparql-mode'."
   :group 'sparql
   :type 'integer)
 
@@ -62,8 +64,8 @@
           (string :tag "Custom")))
 
 (defcustom sparql-prompt-format nil
-  "Non-nil means prompt user for requested format
- on each query evaluation."
+  "Non-nil means prompt user for requested format on each query
+evaluation."
   :group 'sparql
   :type 'boolean)
 
@@ -84,7 +86,7 @@
 (defvar sparql-format nil)
 
 (defun sparql-set-base-url (url)
-  "Sets the base URL for queries"
+  "Set the base URL for queries."
   ;; TODO: This isn't displaying the prompt for some reason
   (interactive "sNew base URL for queries: ")
   (setq sparql-base-url url))
