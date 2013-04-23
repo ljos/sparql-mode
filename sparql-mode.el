@@ -112,6 +112,8 @@ unless it has not been set, in which case it prompts the user."
            nil
            current-format))))
 
+(defvar sparql-result-response)
+
 (defun sparql-handle-results (status &optional sparql-results-buffer)
   "Handles the results that come back from url-retrieve for a
 SPARQL query."
@@ -122,7 +124,7 @@ SPARQL query."
       (insert-buffer-substring http-results-buffer)
       (kill-buffer http-results-buffer)
       (delete-trailing-whitespace)
-      (beginning-of-buffer)
+      (goto-char (point-min))
       (when (string-match "^.* 200 OK$" (thing-at-point 'line))
         (search-forward "\n\n")
         (setq sparql-result-response
@@ -189,31 +191,29 @@ If the region is not active, use the whole buffer."
   "Indent current line as a sparql expression."
   (interactive)
   (back-to-indentation)
-  (let* ((indent-column 0)
-         (line (save-excursion
-                 (previous-line)
-                 (thing-at-point 'line)))
-         (match (string-match "[^[:space:]]+\s+[^[:space:]]+;\s*$"
-                              line)))
+  (let (indent-column)
     (save-excursion
-      (if match
-          (setq indent-column match)
-        (ignore-errors
-          (while (= 0 indent-column)
-            (backward-up-list)
-            (cond ((looking-at "{")
-                   (setq indent-column
-                         (+ (current-indentation)
-                            sparql-indent-offset)))
-                  ((looking-at "(")
-                   (setq indent-column
-                         (1+ (current-column)))))))))
+      (forward-line -1)
+      (setq indent-column
+            (string-match "[^[:space:]]+\s+[^[:space:]]+;\s*$"
+                          (thing-at-point 'line))))
+    (save-excursion
+      (ignore-errors
+        (while (not indent-column)
+          (backward-up-list)
+          (cond ((looking-at "{")
+                 (setq indent-column
+                       (+ (current-indentation)
+                          sparql-indent-offset)))
+                ((looking-at "(")
+                 (setq indent-column
+                       (1+ (current-column))))))))
     (save-excursion
       (when (looking-at "}")
         (setq indent-column
               (- indent-column
                  sparql-indent-offset))))
-    (indent-line-to indent-column)))
+    (indent-line-to (or indent-column 0))))
 
 (define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]"
   (make-local-variable 'sparql-result-response))
