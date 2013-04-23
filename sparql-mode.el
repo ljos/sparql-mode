@@ -225,7 +225,7 @@ If the region is not active, use the whole buffer."
   ;; Font-lock support
   (setq font-lock-defaults '(sparql-keywords))
   ;; Key maps
-  (define-key sparql-mode-map (kbd "C-c C-x") 'sparql-query-region))
+  (define-key sparql-mode-map (kbd "C-c C-c") 'sparql-query-region))
 
 (provide 'sparql-mode)
 
