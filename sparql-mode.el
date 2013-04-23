@@ -230,7 +230,11 @@ If the region is not active, use the whole buffer."
   ;; Indentation
   (set (make-local-variable 'indent-line-function) 'sparql-indent-line)
   ;; Font-lock support
-  (setq font-lock-defaults '(sparql-keywords))
+  (setq font-lock-defaults
+        '(sparql-keywords
+          nil ;; font-lock-keywords-only
+          t   ;; font-lock-keywords-case-fold-search
+          ))
   ;; Key maps
   (define-key sparql-mode-map (kbd "C-c C-c") 'sparql-query-region))
 
