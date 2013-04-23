@@ -121,9 +121,10 @@ SPARQL query."
       (delete-region (point-min) (point-max))
       (insert-buffer-substring http-results-buffer)
       (kill-buffer http-results-buffer)
-      (goto-char (point-min))
-      (search-forward "\n\n")
-      (delete-region (point-min) (point))
+      (beginning-of-buffer)
+      (when (string-match "^.* 200 OK$" (thing-at-point 'line))
+        (search-forward "\n\n")
+        (delete-region (point-min) (point)))
       (setq mode-name "SPARQL[finished]"))))
 
 (defun sparql-query-region ()
