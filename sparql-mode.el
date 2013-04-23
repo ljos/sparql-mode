@@ -218,6 +218,8 @@ If the region is not active, use the whole buffer."
 
 ;;;###autoload
 (define-derived-mode sparql-mode text-mode "SPARQL"
+  "Major mode for SPARQL-queries.
+\\{sparql-mode-map}"
   :group 'sparql-mode
   (make-local-variable 'sparql-base-url)
   ;; Results buffer
