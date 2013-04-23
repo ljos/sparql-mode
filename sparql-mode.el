@@ -139,8 +139,9 @@ If the region is not active, use the whole buffer."
             ("Accept" . ,(sparql-get-format))))
          (url-request-data (format "query=%s" (http-url-encode text)))
          (url (sparql-get-base-url)))
-    (setq sparql-results-buffer
-          (generate-new-buffer (format "*SPARQL: %s*" (buffer-name))))
+    (unless (buffer-live-p sparql-results-buffer)
+      (setq sparql-results-buffer
+            (generate-new-buffer (format "*SPARQL: %s*" (buffer-name)))))
     (save-current-buffer
       (set-buffer sparql-results-buffer)
       (sparql-result-mode)
