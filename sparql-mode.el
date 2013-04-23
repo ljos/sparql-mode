@@ -121,6 +121,7 @@ SPARQL query."
       (delete-region (point-min) (point-max))
       (insert-buffer-substring http-results-buffer)
       (kill-buffer http-results-buffer)
+      (delete-trailing-whitespace)
       (beginning-of-buffer)
       (when (string-match "^.* 200 OK$" (thing-at-point 'line))
         (search-forward "\n\n")
