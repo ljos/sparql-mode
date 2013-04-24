@@ -122,7 +122,6 @@ SPARQL query."
   (let ((http-results-buffer (current-buffer)))
     (set-buffer sparql-results-buffer)
     (let ((buffer-read-only nil))
-      (delete-region (point-min) (point-max))
       (insert-buffer-substring http-results-buffer)
       (kill-buffer http-results-buffer)
       (delete-trailing-whitespace)
@@ -153,6 +152,8 @@ If the region is not active, use the whole buffer."
     (save-current-buffer
       (set-buffer sparql-results-buffer)
       (sparql-result-mode)
+      (let ((buffer-read-only nil))
+        (delete-region (point-min) (point-max)))
       (setq buffer-read-only t))
     (url-retrieve url 'sparql-handle-results (list sparql-results-buffer))
     (view-buffer-other-window sparql-results-buffer)
