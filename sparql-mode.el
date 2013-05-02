@@ -180,7 +180,7 @@ If the region is not active, use the whole buffer."
      "TO"
      "UNDEF" "UNION" "USING"
      "WHERE" "WITH")
-   'words))
+   'symbols))
 
 (defconst sparql-keywords
   `(("<[^[:space:]]*>" . font-lock-constant-face)
