@@ -211,11 +211,10 @@ If the region is not active, use the whole buffer."
                 ((looking-at "(")
                  (setq indent-column
                        (1+ (current-column))))))))
-    (save-excursion
-      (when (looking-at "}")
-        (setq indent-column
-              (- indent-column
-                 sparql-indent-offset))))
+    (when (looking-at "}")
+      (setq indent-column
+            (- indent-column
+               sparql-indent-offset)))
     (indent-line-to (or indent-column 0))))
 
 (define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]"
