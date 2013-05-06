@@ -217,16 +217,17 @@ If the region is not active, use the whole buffer."
                sparql-indent-offset)))
     (indent-line-to (or indent-column 0))))
 
+(defun sparql-result-show-response ()
+  (interactive)
+  (message sparql-result-response))
+
 (define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]"
   "Major mode to hold the result from the SPARQL-queries.
 \\{sparql-result-mode-map}"
   ;; The response header from the server.
   (make-local-variable 'sparql-result-response)
   ;; Key maps
-  (define-key sparql-result-mode-map (kbd "C-c m")
-    '(lambda ()
-       (interactive)
-       (message sparql-result-response))))
+  (define-key sparql-result-mode-map (kbd "C-c m") 'sparql-result-show-response))
 
 (defvar sparql-mode-syntax-table
   (let ((syntax-table (make-syntax-table)))
