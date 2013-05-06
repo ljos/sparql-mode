@@ -188,7 +188,7 @@ If the region is not active, use the whole buffer."
     ("^[^#]*?\\('[^']*'\\)" 1 font-lock-string-face)
     (".*?\\(#.*\\)" 1 font-lock-comment-face)
     ,sparql-keywords-re
-    ("\\?\\w+" . font-lock-variable-name-face)))
+    ("[?$]\\w+" 0 font-lock-variable-name-face)))
 
 (defun sparql-indent-line ()
   "Indent current line as a sparql expression."
