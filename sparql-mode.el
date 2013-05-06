@@ -238,6 +238,10 @@ If the region is not active, use the whole buffer."
           nil ;; font-lock-keywords-only
           t   ;; font-lock-keywords-case-fold-search
           ))
+  ;; Modify syntax table to allow ?var to be accessed with
+  ;; symbol-at-point and idle-highlight-mode will work without any
+  ;; problem.
+  (modify-syntax-entry ?? "w")
   ;; Key maps
   (define-key sparql-mode-map (kbd "C-c C-c") 'sparql-query-region))
 
