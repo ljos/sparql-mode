@@ -217,7 +217,7 @@ If the region is not active, use the whole buffer."
                sparql-indent-offset)))
     (indent-line-to (or indent-column 0))))
 
-(define-derived-mode sparql-result-mode prog-mode "SPARQL[waiting]"
+(define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]"
   (make-local-variable 'sparql-result-response))
 
 ;;;###autoload
