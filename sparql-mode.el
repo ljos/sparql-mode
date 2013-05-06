@@ -7,7 +7,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.5.0
+;; Version: 0.6.0
 
 ;; This file is not part of GNU Emacs.
 
@@ -218,7 +218,15 @@ If the region is not active, use the whole buffer."
     (indent-line-to (or indent-column 0))))
 
 (define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]"
-  (make-local-variable 'sparql-result-response))
+  "Major mode to hold the result from the SPARQL-queries.
+\\{sparql-result-mode-map}"
+  ;; The response header from the server.
+  (make-local-variable 'sparql-result-response)
+  ;; Key maps
+  (define-key sparql-result-mode-map (kbd "C-c m")
+    '(lambda ()
+       (interactive)
+       (message sparql-result-response))))
 
 ;;;###autoload
 (define-derived-mode sparql-mode prog-mode "SPARQL"
