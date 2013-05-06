@@ -7,7 +7,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.6.0
+;; Version: 0.6.1
 
 ;; This file is not part of GNU Emacs.
 
@@ -228,6 +228,19 @@ If the region is not active, use the whole buffer."
        (interactive)
        (message sparql-result-response))))
 
+(defvar sparql-mode-syntax-table
+  (let ((syntax-table (make-syntax-table)))
+    ;; Let `?` be a part of a word so that a variable will be
+    ;; interpreted as a word.
+    (modify-syntax-entry ?? "w" syntax-table)
+
+    ;; make `"` and `'` be punctuations so we can do our own
+    ;; font-locking.
+    (modify-syntax-entry ?\" "." syntax-table)
+    (modify-syntax-entry ?\' "." syntax-table)
+    syntax-table)
+  "Syntax table for SPARQL-mode")
+
 ;;;###autoload
 (define-derived-mode sparql-mode prog-mode "SPARQL"
   "Major mode for SPARQL-queries.
@@ -246,10 +259,6 @@ If the region is not active, use the whole buffer."
           nil ;; font-lock-keywords-only
           t   ;; font-lock-keywords-case-fold-search
           ))
-  ;; Modify syntax table to allow ?var to be accessed with
-  ;; symbol-at-point and idle-highlight-mode will work without any
-  ;; problem.
-  (modify-syntax-entry ?? "w")
   ;; Key maps
   (define-key sparql-mode-map (kbd "C-c C-c") 'sparql-query-region))
 
