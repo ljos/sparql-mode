@@ -244,7 +244,7 @@ If the region is not active, use the whole buffer."
 
 ;; Compatability with Emacs < 24
 (defalias 'sparql-parent-mode
-  (if (fbound 'prog-mode) 'prog-mode 'fundamental-mode))
+  (if (fboundp 'prog-mode) 'prog-mode 'fundamental-mode))
 
 ;;;###autoload
 (define-derived-mode sparql-mode sparql-parent-mode "SPARQL"
