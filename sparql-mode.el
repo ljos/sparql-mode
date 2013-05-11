@@ -247,7 +247,7 @@ If the region is not active, use the whole buffer."
   (if (fbound 'prog-mode) 'prog-mode 'fundamental-mode))
 
 ;;;###autoload
-(define-derived-mode sparql-mode prog-mode "SPARQL"
+(define-derived-mode sparql-mode sparql-parent-mode "SPARQL"
   "Major mode for SPARQL-queries.
 \\{sparql-mode-map}"
   :group 'sparql-mode
