@@ -242,6 +242,10 @@ If the region is not active, use the whole buffer."
     syntax-table)
   "Syntax table for SPARQL-mode")
 
+;; Compatability with Emacs < 24
+(defalias 'sparql-parent-mode
+  (if (fbound 'prog-mode) 'prog-mode 'fundamental-mode))
+
 ;;;###autoload
 (define-derived-mode sparql-mode prog-mode "SPARQL"
   "Major mode for SPARQL-queries.
