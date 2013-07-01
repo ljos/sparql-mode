@@ -232,6 +232,8 @@ If the region is not active, use the whole buffer."
     (indent-line-to (or indent-column 0))))
 
 (defun sparql-result-show-response ()
+  "Shows the header of the response from the server in the
+minibuffer."
   (interactive)
   (message sparql-result-response))
 
