@@ -3,6 +3,7 @@
 ;; Copyright (C) 2011  Craig Andera
 ;; Copyright (C) 2013  Marcus Nitzschke
 ;; Copyright (C) 2013  Bjarte Johansen
+;; Copyright (C) 2013  Robert Syme
 
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
