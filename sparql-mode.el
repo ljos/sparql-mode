@@ -114,16 +114,31 @@ it has not been set, in which case it prompts the user."
   (or (and (not sparql-prompt-base-url) sparql-base-url)
       (command-execute 'sparql-set-base-url)))
 
+(defvar sparql-format-history
+  '("text/csv"
+    "text/tab-separated-values"
+    "application/sparql-results+json"
+    "application/sparql-results+xml"))
+
+(defun sparql-set-format (new-format)
+  "Set the format that the server should respond in."
+  (interactive
+   (let ((current-format (or sparql-format sparql-default-format)))
+     (list (read-string (format "Format (%s): " current-format)
+                        nil
+                        'sparql-format-history
+                        current-format))))
+  (setq sparql-format
+        (if (string= "" new-format)
+            (or sparql-format sparql-default-format)
+          (add-to-list 'sparql-format-history new-format)
+          new-format)))
+
 (defun sparql-get-format ()
   "Returns the requested result format for queries in this buffer
 unless it has not been set, in which case it prompts the user."
-  (let ((current-format (or sparql-format sparql-default-format)))
-    (setq sparql-format
-          (read-string
-           (format "Format (%s): " current-format)
-           nil
-           nil
-           current-format))))
+  (or (and (not sparql-prompt-format) sparql-format)
+      (command-execute 'sparql-set-format)))
 
 (defvar sparql-result-response)
 
