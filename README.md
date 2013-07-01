@@ -20,7 +20,14 @@ other endpoints like [DBPedia](http://dbpedia.org/sparql).
   
 Now sparql-mode will load whenever you visit a file whose name ends
 with .sparql. Alternatively, run `M-x sparql-mode` in an existing
-buffer containing SPARQL commands
+buffer containing SPARQL commands.
+
+It is also possible to add
+```
+# -*- mode: sparql -*-
+```
+to the top of the file. This is a comment read by emacs to discover 
+what mode to use.
 
 # Executing SPARQL Queries from within Emacs
 
