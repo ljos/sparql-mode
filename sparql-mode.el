@@ -87,7 +87,6 @@ evaluation."
 
 (defun sparql-set-base-url (url)
   "Set the base URL for queries."
-  ;; TODO: This isn't displaying the prompt for some reason
   (interactive "sNew base URL for queries: ")
   (setq sparql-base-url url))
 
@@ -265,7 +264,8 @@ If the region is not active, use the whole buffer."
           t   ;; font-lock-keywords-case-fold-search
           ))
   ;; Key maps
-  (define-key sparql-mode-map (kbd "C-c C-c") 'sparql-query-region))
+  (define-key sparql-mode-map (kbd "C-c C-c") 'sparql-query-region)
+  (define-key sparql-mode-map (kbd "C-c u") 'sparql-set-base-url))
 
 (provide 'sparql-mode)
 
