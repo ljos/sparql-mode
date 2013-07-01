@@ -54,6 +54,12 @@
   :group 'sparql
   :type 'string)
 
+(defcustom sparql-prompt-base-url nil
+  "Non-nil means prompt user for requested URL on each query
+  evaluation."
+  :group 'sparql
+  :type 'boolean)
+
 (defcustom sparql-default-format "text/csv"
   "The default format of the returned results."
   :group 'sparql
@@ -86,22 +92,27 @@ evaluation."
 (defvar sparql-base-url nil)
 (defvar sparql-format nil)
 
-(defun sparql-set-base-url (url)
+(defvar sparql-base-url-history (list sparql-default-base-url))
+
+(defun sparql-set-base-url (new-url)
   "Set the base URL for queries."
-  (interactive "sNew base URL for queries: ")
-  (setq sparql-base-url url))
+  (interactive
+   (let ((current-url (or sparql-base-url sparql-default-base-url)))
+     (list (read-string (format "SPARQL URL (%s): " current-url)
+                        nil
+                        'sparql-base-url-history
+                        current-url))))
+  (setq sparql-base-url
+        (if (string= "" new-url)
+            (or sparql-base-url sparql-default-base-url)
+          (add-to-list 'sparql-base-url-history new-url)
+          new-url)))
 
 (defun sparql-get-base-url ()
   "Returns the base URL for SPARQL queries in this buffer unless
 it has not been set, in which case it prompts the user."
-  (if sparql-base-url
-      sparql-base-url
-    (setq sparql-base-url
-          (read-string
-           (format "SPARQL URL (%s): " sparql-default-base-url)
-           nil
-           nil
-           sparql-default-base-url))))
+  (or (and (not sparql-prompt-base-url) sparql-base-url)
+      (command-execute 'sparql-set-base-url)))
 
 (defun sparql-get-format ()
   "Returns the requested result format for queries in this buffer
