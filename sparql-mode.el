@@ -8,7 +8,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.7.0
+;; Version: 0.7.1
 
 ;; This file is not part of GNU Emacs.
 
@@ -75,18 +75,6 @@
 evaluation."
   :group 'sparql
   :type 'boolean)
-
-;; URL encoding for parameters
-(defun http-url-encode (str)
-  "URL encode STR."
-  (apply 'concat
-         (mapcar (lambda (c)
-                   (if (or (and (>= c ?a) (<= c ?z))
-                           (and (>= c ?A) (<= c ?Z))
-                           (and (>= c ?0) (<= c ?9)))
-                       (string c)
-                     (format "%%%02x" c)))
-                 (encode-coding-string str 'utf-8))))
 
 (defvar sparql-results-buffer nil)
 (defvar sparql-base-url nil)
@@ -170,7 +158,7 @@ If the region is not active, use the whole buffer."
          (url-request-extra-headers
           `(("Content-Type" . "application/x-www-form-urlencoded")
             ("Accept" . ,(sparql-get-format))))
-         (url-request-data (format "query=%s" (http-url-encode text)))
+         (url-request-data (concat "query=" (url-hexify-string text)))
          (url (sparql-get-base-url)))
     (unless (buffer-live-p sparql-results-buffer)
       (setq sparql-results-buffer
