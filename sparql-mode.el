@@ -292,7 +292,8 @@ If the region is not active, use the whole buffer."
           ))
   ;; Key maps
   (define-key sparql-mode-map (kbd "C-c C-c") 'sparql-query-region)
-  (define-key sparql-mode-map (kbd "C-c u") 'sparql-set-base-url))
+  (define-key sparql-mode-map (kbd "C-c u") 'sparql-set-base-url)
+  (define-key sparql-mode-map (kbd "C-c f") 'sparql-set-format))
 
 (provide 'sparql-mode)
 
