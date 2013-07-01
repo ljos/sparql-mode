@@ -8,7 +8,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.6.3
+;; Version: 0.7.0
 
 ;; This file is not part of GNU Emacs.
 
