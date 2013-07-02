@@ -17,7 +17,7 @@ other endpoints like [DBPedia](http://dbpedia.org/sparql).
   "Major mode for editing SPARQL files" t)
 (add-to-list 'auto-mode-alist '("\\.sparql$" . sparql-mode))
 ```
-  
+
 Now sparql-mode will load whenever you visit a file whose name ends
 with .sparql. Alternatively, run `M-x sparql-mode` in an existing
 buffer containing SPARQL commands.
@@ -26,8 +26,16 @@ It is also possible to add
 ```
 # -*- mode: sparql -*-
 ```
-to the top of the file. This is a comment read by emacs to discover 
+to the top of the file. This is a comment read by emacs to discover
 what mode to use.
+
+## Auto-compete mode
+SPARQL-mode now also supports auto-complete-mode. Just add
+
+```elisp
+(add-to-list 'ac-dictionary-files "/path/to/sparql-mode-dir/sparql-mode")
+(add-hook 'sparql-mode-hook 'auto-complete-mode)
+```
 
 # Executing SPARQL Queries from within Emacs
 
@@ -35,7 +43,7 @@ From a buffer that is in sparql-mode, execute `M-x
 sparql-query-region`. You will be prompted for a SPARQL HTTP endpoint
 in the minibuffer, which defaults to `http://localhost:2020/`. Once
 set, it will be used for all subsequent queries in that buffer.
-Results will be displayed in another buffer in CSV format. 
+Results will be displayed in another buffer in CSV format.
 
 # Bugs and Enhancements
 

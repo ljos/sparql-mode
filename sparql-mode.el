@@ -38,6 +38,11 @@
 ;;   "Major mode for editing SPARQL files" t)
 ;;  (add-to-list 'auto-mode-alist '("\\.sparql$" . sparql-mode))
 
+;; If you want auto-complete support you can also add:
+
+;;  (add-to-list 'ac-dictionary-files "/path/to/sparql-mode-dir/sparql-mode")
+;;  (add-hook 'sparql-mode-hook 'auto-complete-mode)
+
 ;;; Code:
 
 (defgroup sparql nil
