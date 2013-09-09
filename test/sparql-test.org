@@ -1,0 +1,122 @@
+#+STARTUP: content indent hidestars logdone
+* Tests for SPARQL-mode
+** Indentation
+The indentation tests are pretty basic. We just want to ensure that when we run
+indent on the whole buffer that we don't move something to a position it should
+not be in. This is done by inserting the unindented version into a temporary
+buffer and running =indent-region= on the whole buffer.
+
+#+NAME: test->indent
+#+BEGIN_SRC emacs-lisp :var input=input :var result=result :results silent
+  (should
+   (with-temp-buffer
+     (insert input)
+     (sparql-mode)
+     (indent-region (point-min) (point-max))
+     (string= result
+              (buffer-substring-no-properties
+               (point-min) (point-max)))))
+#+END_SRC
+
+*** Basic
+The basic test is just to see that things inside ={}= are indented by two
+spaces.
+
+#+NAME: input
+#+BEGIN_EXAMPLE
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?name
+WHERE {
+?person a foaf:Person.
+?person foaf:name ?name.
+}
+#+END_EXAMPLE
+
+#+NAME: result
+#+BEGIN_EXAMPLE
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?name
+WHERE {
+  ?person a foaf:Person.
+  ?person foaf:name ?name.
+}
+#+END_EXAMPLE
+
+#+CALL: test->indent(input, result)
+
+#+RESULTS:
+: t
+
+*** Parenthesis
+We have a bit of a different indenting mode for things inside the
+parenthesis. Here we want the indentation to be one further then then the
+receiving =(=.
+
+#+NAME: input
+#+BEGIN_EXAMPLE
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+SELECT *
+WHERE {
+?entity geo:lat ?lat.
+?entity geo:long ?long.
+FILTER((0 < ?lat) && (?lat < 60) &&
+(0 < ?long) && (?long < 60)).
+}
+#+END_EXAMPLE
+
+#+NAME: result
+#+BEGIN_EXAMPLE
+PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+SELECT *
+WHERE {
+  ?entity geo:lat ?lat.
+  ?entity geo:long ?long.
+  FILTER((0 < ?lat) && (?lat < 60) &&
+         (0 < ?long) && (?long < 60)).
+}
+#+END_EXAMPLE
+
+#+CALL: test->indent(input, result)
+
+#+RESULTS:
+: t
+
+*** Semi-colon
+If there is a semi-colon at the end of the line the next line should be indented
+to the second /word/ in the first line.
+
+#+NAME: input
+#+BEGIN_EXAMPLE
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?name ?email
+WHERE {
+?person a foaf:Person
+?person foaf:name ?name;
+foaf:mbox ?email.
+}
+#+END_EXAMPLE
+
+#+NAME: result
+#+BEGIN_EXAMPLE
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?name ?email
+WHERE {
+  ?person a foaf:Person.
+  ?person foaf:name ?name;
+          foaf:mbox ?email.
+}
+#+END_EXAMPLE
+
+#+CALL: test->indent(input, result)
+
+#+RESULTS:
+: t
+
+** TODO Font lock
+*** TODO Keywords
+*** TODO Variables
+*** TODO Namespace
+*** TODO Strings
+**** TODO double quote
+**** TODO single quote
+*** TODO Comments
