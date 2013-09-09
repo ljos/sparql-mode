@@ -33,7 +33,7 @@ WHERE {
 }
 #+END_EXAMPLE
 
-**** Result
+**** Expected
 #+NAME: result
 #+BEGIN_EXAMPLE
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -44,7 +44,7 @@ WHERE {
 }
 #+END_EXAMPLE
 
-**** Test
+**** Result
 #+CALL: test->indent(input, result)
 
 #+RESULTS:
@@ -68,7 +68,7 @@ FILTER((0 < ?lat) && (?lat < 60) &&
 }
 #+END_EXAMPLE
 
-**** Result
+**** Expected
 #+NAME: result
 #+BEGIN_EXAMPLE
 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
@@ -81,7 +81,7 @@ WHERE {
 }
 #+END_EXAMPLE
 
-**** Test
+**** Result
 #+CALL: test->indent(input, result)
 
 #+RESULTS:
@@ -103,7 +103,7 @@ foaf:mbox ?email.
 }
 #+END_EXAMPLE
 
-**** Result
+**** Expected
 #+NAME: result
 #+BEGIN_EXAMPLE
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -115,7 +115,7 @@ WHERE {
 }
 #+END_EXAMPLE
 
-**** Test
+**** Result
 #+CALL: test->indent(input, result)
 
 #+RESULTS:
