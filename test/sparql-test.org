@@ -22,6 +22,7 @@ buffer and running =indent-region= on the whole buffer.
 The basic test is just to see that things inside ={}= are indented by two
 spaces.
 
+**** Input
 #+NAME: input
 #+BEGIN_EXAMPLE
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -32,6 +33,7 @@ WHERE {
 }
 #+END_EXAMPLE
 
+**** Result
 #+NAME: result
 #+BEGIN_EXAMPLE
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -42,6 +44,7 @@ WHERE {
 }
 #+END_EXAMPLE
 
+**** Test
 #+CALL: test->indent(input, result)
 
 #+RESULTS:
@@ -52,6 +55,7 @@ We have a bit of a different indenting mode for things inside the
 parenthesis. Here we want the indentation to be one further then then the
 receiving =(=.
 
+**** Input
 #+NAME: input
 #+BEGIN_EXAMPLE
 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
@@ -64,6 +68,7 @@ FILTER((0 < ?lat) && (?lat < 60) &&
 }
 #+END_EXAMPLE
 
+**** Result
 #+NAME: result
 #+BEGIN_EXAMPLE
 PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
@@ -76,6 +81,7 @@ WHERE {
 }
 #+END_EXAMPLE
 
+**** Test
 #+CALL: test->indent(input, result)
 
 #+RESULTS:
@@ -85,6 +91,7 @@ WHERE {
 If there is a semi-colon at the end of the line the next line should be indented
 to the second /word/ in the first line.
 
+**** Input
 #+NAME: input
 #+BEGIN_EXAMPLE
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -96,6 +103,7 @@ foaf:mbox ?email.
 }
 #+END_EXAMPLE
 
+**** Result
 #+NAME: result
 #+BEGIN_EXAMPLE
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -107,10 +115,12 @@ WHERE {
 }
 #+END_EXAMPLE
 
+**** Test
 #+CALL: test->indent(input, result)
 
 #+RESULTS:
 : t
+
 
 ** TODO Font lock
 *** TODO Keywords
