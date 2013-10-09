@@ -252,9 +252,10 @@ minibuffer."
 
 (defvar sparql-mode-syntax-table
   (let ((syntax-table (make-syntax-table)))
-    ;; Let `?` be a part of a word so that a variable will be
+    ;; Let `?` and `_` be part of a word so that a variable will be
     ;; interpreted as a word.
     (modify-syntax-entry ?? "w" syntax-table)
+    (modify-syntax-entry ?_ "w" syntax-table)
 
     ;; make `"` and `'` be punctuations so we can do our own
     ;; font-locking.
