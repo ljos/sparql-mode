@@ -1,9 +1,8 @@
 * What is it?
   A major mode for emacs that provides syntax highlighting for
-  [SPARQL](http://www.w3.org/TR/sparql11-query/). It also provides a way
-  to execute queries against a SPARQL HTTP endpoint, such as is provided
-  by [Fuseki](http://jena.apache.org/documentation/serving_data/). It is also possible to query
-  other endpoints like [DBPedia](http://dbpedia.org/sparql).
+  [[http://www.w3.org/TR/sparql11-query/][SPARQL]]. It also provides a way to execute queries against a SPARQL
+  HTTP endpoint, such as is provided by [[http://jena.apache.org/documentation/serving_data/][Fuseki]]. It is also possible to
+  query other endpoints like [[http://dbpedia.org/sparql][DBPedia]].
 
 * Getting Started
   - Download sparql-mode and put it in a directory somewhere.
@@ -17,7 +16,7 @@
   #+END_SRC
 
   Now sparql-mode will load whenever you visit a file whose name ends
-  with .sparql. Alternatively, run `M-x sparql-mode` in an existing
+  with .sparql. Alternatively, run =M-x sparql-mode= in an existing
   buffer containing SPARQL commands.
 
   It is also possible to add
@@ -36,15 +35,15 @@
    #+END_SRC
 
 * Executing SPARQL Queries from within Emacs
-  From a buffer that is in sparql-mode, execute `M-x
-  sparql-query-region`. You will be prompted for a SPARQL HTTP endpoint
-  in the minibuffer, which defaults to `http://localhost:2020/`. Once
-  set, it will be used for all subsequent queries in that buffer.
-  Results will be displayed in another buffer in CSV format.
+  From a buffer that is in sparql-mode, execute =M-x
+  sparql-query-region=. You will be prompted for a SPARQL HTTP
+  endpoint in the minibuffer, which defaults to
+  =http://localhost:2020/=. Once set, it will be used for all
+  subsequent queries in that buffer.  Results will be displayed in
+  another buffer in CSV format.
 
 * Bugs and Enhancements
-  sparql-mode is currently very young, and lacks a lot of features that
-  I'd like it to have. If you have a problem or would like to see it get
-  better in a specific way, feel free to drop an issue in
-  [the issue tracker](https://github.com/ljos/sparql-mode/issues).
-  Enjoy!
+  =sparql-mode= is currently very young, and lacks a lot of features
+  that I'd like it to have. If you have a problem or would like to see
+  it get better in a specific way, feel free to drop an issue in
+  [[https://github.com/ljos/sparql-mode/issues][the issue tracker]].  Enjoy!
