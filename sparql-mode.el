@@ -145,7 +145,8 @@ SPARQL query."
       (kill-buffer http-results-buffer)
       (delete-trailing-whitespace)
       (goto-char (point-min))
-      (when (string-match "^.* 200 OK$" (thing-at-point 'line))
+      (when (string-match (rx bol (* not-newline) space "200 OK" eol)
+                          (thing-at-point 'line))
         (search-forward "\n\n")
         (setq sparql-result-response
               (buffer-substring (point-min) (point)))
@@ -202,12 +203,17 @@ If the region is not active, use the whole buffer."
    'symbols))
 
 (defconst sparql-keywords
-  `(("<[^[:space:]]*>" . font-lock-constant-face)
-    ("^[^#]*?\\(\"[^\"]*\"\\)" 1 font-lock-string-face)
-    ("^[^#]*?\\('[^']*'\\)" 1 font-lock-string-face)
-    (".*?\\(#.*\\)" 1 font-lock-comment-face)
-    ,sparql-keywords-re
-    ("[?$]\\w+" 0 font-lock-variable-name-face)))
+  `((,(rx "<" (* (not space)) ">")
+     . font-lock-constant-face)
+    (,(rx bol (*? (not (in "#"))) (group "\"" (* (not ("\""))) "\""))
+     1 font-lock-string-face)
+    (,(rx bol (*? (not (in "#"))) (group "'" (* (not (in "'"))) "'"))
+     1 font-lock-string-face)
+    (,(rx (*? not-newline) (group "#" (* not-newline)))
+     1 font-lock-comment-face)
+     ,sparql-keywords-re
+    (,(rx (any "?$") (+ word))
+     0 font-lock-variable-name-face)))
 
 (defun sparql-indent-line ()
   "Indent current line as a sparql expression."
@@ -217,8 +223,12 @@ If the region is not active, use the whole buffer."
     (save-excursion
       (forward-line -1)
       (setq indent-column
-            (string-match "[^[:space:]]+\s+[^[:space:]]+;\s*$"
-                          (thing-at-point 'line))))
+            (string-match (rx (+ (not space)) (+ space)
+                              (+ (not space))
+                              ";"
+                              (* space)
+                              eol)
+                          (thing-at-point 'line)))
     (save-excursion
       (ignore-errors
         (while (not indent-column)
