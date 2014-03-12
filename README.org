@@ -42,6 +42,38 @@
   subsequent queries in that buffer.  Results will be displayed in
   another buffer in CSV format.
 
+* Org-babel support
+  It is also possible to use =sparql-mode= with org-mode and executing
+  queries with org-babel. You can do that by adding the following
+  snippet or adding =(sparql . t)= to languages org-babel can load:
+
+  #+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((elasticsearch . t)))
+  #+END_SRC
+
+  You can then execute the query by pressing =C-c C-c= on the
+  source-block header.
+
+*** Example
+    #+BEGIN_SRC sparql :url http://live.dbpedia.org/sparql :format text/csv
+      SELECT DISTINCT ?Concept WHERE {
+        [] a ?Concept
+      } LIMIT 5
+    #+END_SRC
+
+    #+RESULTS:
+    : "Concept"
+    : "http://www.openlinksw.com/schemas/virtrdf#QuadMapFormat"
+    : "http://www.openlinksw.com/schemas/virtrdf#QuadStorage"
+    : "http://www.openlinksw.com/schemas/virtrdf#array-of-QuadMapFormat"
+    : "http://www.openlinksw.com/schemas/virtrdf#QuadMap"
+    : "http://www.openlinksw.com/schemas/virtrdf#QuadMapValue"
+
+    Notice that the server request is done synchronously and will
+    therefore lock the editor if the request takes a long time.
+
 * Bugs and Enhancements
   If you have a problem or would like to see it get better in a
   specific way, feel free to drop an issue in [[https://github.com/ljos/sparql-mode/issues][the issue tracker]].
