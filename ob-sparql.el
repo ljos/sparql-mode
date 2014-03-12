@@ -28,6 +28,14 @@
 
 ;; Provides a way to evaluate SPARQL queries in org-mode.
 
+;;; Usage:
+
+;; Add to your Emacs config:
+
+;; (org-babel-do-load-languages
+;;  'org-babel-load-languages
+;;  '((elasticsearch . t)))
+
 ;;; Code:
 (require 'ob)
 (require 'ob-ref)
