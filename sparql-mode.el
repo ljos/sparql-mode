@@ -211,7 +211,7 @@ If the region is not active, use the whole buffer."
      1 font-lock-string-face)
     (,(rx (*? not-newline) (group "#" (* not-newline)))
      1 font-lock-comment-face)
-     ,sparql-keywords-re
+    ,sparql-keywords-re
     (,(rx (any "?$") (+ word))
      0 font-lock-variable-name-face)))
 
@@ -229,22 +229,22 @@ If the region is not active, use the whole buffer."
                               (* space)
                               eol)
                           (thing-at-point 'line)))
-    (save-excursion
-      (ignore-errors
-        (while (not indent-column)
-          (backward-up-list)
-          (cond ((looking-at "{")
-                 (setq indent-column
-                       (+ (current-indentation)
-                          sparql-indent-offset)))
-                ((looking-at "(")
-                 (setq indent-column
-                       (1+ (current-column))))))))
-    (when (looking-at "}")
-      (setq indent-column
-            (- indent-column
-               sparql-indent-offset)))
-    (indent-line-to (or indent-column 0))))
+      (save-excursion
+        (ignore-errors
+          (while (not indent-column)
+            (backward-up-list)
+            (cond ((looking-at "{")
+                   (setq indent-column
+                         (+ (current-indentation)
+                            sparql-indent-offset)))
+                  ((looking-at "(")
+                   (setq indent-column
+                         (1+ (current-column))))))))
+      (when (looking-at "}")
+        (setq indent-column
+              (- indent-column
+                 sparql-indent-offset)))
+      (indent-line-to (or indent-column 0)))))
 
 (defun sparql-result-show-response ()
   "Shows the header of the response from the server in the
