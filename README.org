@@ -43,7 +43,6 @@
   another buffer in CSV format.
 
 * Bugs and Enhancements
-  =sparql-mode= is currently very young, and lacks a lot of features
-  that I'd like it to have. If you have a problem or would like to see
-  it get better in a specific way, feel free to drop an issue in
-  [[https://github.com/ljos/sparql-mode/issues][the issue tracker]].  Enjoy!
+  If you have a problem or would like to see it get better in a
+  specific way, feel free to drop an issue in [[https://github.com/ljos/sparql-mode/issues][the issue tracker]].
+  Enjoy!
