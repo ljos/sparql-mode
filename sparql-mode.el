@@ -8,7 +8,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.7.2
+;; Version: 0.7.3
 
 ;; This file is not part of GNU Emacs.
 
@@ -205,7 +205,7 @@ If the region is not active, use the whole buffer."
 (defconst sparql-keywords
   `((,(rx "<" (* (not space)) ">")
      . font-lock-constant-face)
-    (,(rx bol (*? (not (in "#"))) (group "\"" (* (not ("\""))) "\""))
+    (,(rx bol (*? (not (in "#"))) (group "\"" (* (not (in "\""))) "\""))
      1 font-lock-string-face)
     (,(rx bol (*? (not (in "#"))) (group "'" (* (not (in "'"))) "'"))
      1 font-lock-string-face)
