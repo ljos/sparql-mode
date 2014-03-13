@@ -8,7 +8,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.8.0
+;; Version: 0.8.1
 
 ;; This file is not part of GNU Emacs.
 
@@ -252,13 +252,17 @@ minibuffer."
   (interactive)
   (message sparql-result-response))
 
+(defvar sparql-result-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c m") 'sparql-result-show-response)
+    map)
+  "Keymap for `sparql-result-mode'.")
+
 (define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]"
   "Major mode to hold the result from the SPARQL-queries.
 \\{sparql-result-mode-map}"
   ;; The response header from the server.
-  (make-local-variable 'sparql-result-response)
-  ;; Key maps
-  (define-key sparql-result-mode-map (kbd "C-c m") 'sparql-result-show-response))
+  (make-local-variable 'sparql-result-response))
 
 (defvar sparql-mode-syntax-table
   (let ((syntax-table (make-syntax-table)))
@@ -272,7 +276,15 @@ minibuffer."
     (modify-syntax-entry ?\" "." syntax-table) ; " ; <-- Stop the string on github
     (modify-syntax-entry ?\' "." syntax-table)
     syntax-table)
-  "Syntax table for SPARQL-mode")
+  "Syntax table for SPARQL-mode.")
+
+(defvar sparql-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-c") 'sparql-query-region)
+    (define-key map (kbd "C-c u") 'sparql-set-base-url)
+    (define-key map (kbd "C-c f") 'sparql-set-format)
+    map)
+  "Keymap for `sparql-mode'.")
 
 ;; Compatability with Emacs < 24
 (defalias 'sparql-parent-mode
@@ -295,11 +307,7 @@ minibuffer."
         '(sparql-keywords
           nil ;; font-lock-keywords-only
           t   ;; font-lock-keywords-case-fold-search
-          ))
-  ;; Key maps
-  (define-key sparql-mode-map (kbd "C-c C-c") 'sparql-query-region)
-  (define-key sparql-mode-map (kbd "C-c u") 'sparql-set-base-url)
-  (define-key sparql-mode-map (kbd "C-c f") 'sparql-set-format))
+          )))
 
 (provide 'sparql-mode)
 
