@@ -8,7 +8,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.8.2
+;; Version: 0.8.3
 
 ;; This file is not part of GNU Emacs.
 
@@ -270,6 +270,10 @@ minibuffer."
     ;; interpreted as a word.
     (modify-syntax-entry ?? "w" syntax-table)
     (modify-syntax-entry ?_ "w" syntax-table)
+
+    ;; Comments
+    (modify-syntax-entry ?# "<" syntax-table)
+    (modify-syntax-entry ?\n ">" syntax-table)
 
     ;; make `"` and `'` be punctuations so we can do our own
     ;; font-locking.
