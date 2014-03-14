@@ -1,9 +1,9 @@
 ;;; sparql-mode.el --- Edit and interactively evaluate SPARQL queries.
 
-;; Copyright (C) 2011  Craig Andera
-;; Copyright (C) 2013  Marcus Nitzschke
-;; Copyright (C) 2013  Bjarte Johansen
-;; Copyright (C) 2013  Robert Syme
+;; Copyright (C) 2011       Craig Andera
+;; Copyright (C) 2013       Marcus Nitzschke
+;; Copyright (C) 2013, 2014 Bjarte Johansen
+;; Copyright (C) 2013       Robert Syme
 
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
