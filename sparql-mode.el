@@ -4,11 +4,12 @@
 ;; Copyright (C) 2013       Marcus Nitzschke
 ;; Copyright (C) 2013, 2014 Bjarte Johansen
 ;; Copyright (C) 2013       Robert Syme
+;; Copyright (C) 2014       Alex Tucker
 
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.8.3
+;; Version: 0.8.4
 
 ;; This file is not part of GNU Emacs.
 
