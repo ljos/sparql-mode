@@ -204,7 +204,7 @@ If the region is not active, use the whole buffer."
 
 (defconst sparql-keywords
   `((,(rx "<" (* (not space)) ">")
-     . font-lock-constant-face)
+     0 font-lock-constant-face t)
     (,(rx bol (*? (not (in "#"))) (group "\"" (* (not (in "\""))) "\""))
      1 font-lock-string-face)
     (,(rx bol (*? (not (in "#"))) (group "'" (* (not (in "'"))) "'"))
