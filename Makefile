@@ -17,40 +17,31 @@
 # You should have received a copy of the GNU General Public License
 # along with SPARQL mode.  If not, see <http://www.gnu.org/licenses/>.
 
-.PHONY: all clean install dist
+.PHONY: all package clean install
 
 CASK?=cask
 EMACS?=emacs
-TAR?=COPYFILE_DISABLE=1 bsdtar
-CURL?=curl
 
 VERSION?=$(shell $(CASK) version)
 
 ARCHIVE_NAME=sparql-mode
 PACKAGE_NAME=$(ARCHIVE_NAME)-$(VERSION)
 
-all: $(PACKAGE_NAME).tar
+all: package
 
+package: dist/$(PACKAGE_NAME).tar
 
-$(ARCHIVE_NAME)-pkg.el: $(ARCHIVE_NAME).el
+dist/$(PACKAGE_NAME).tar:
 	$(CASK) package
 
-# create a tar ball in package.el format for uploading to
-# http://marmalade-repo.org
-$(PACKAGE_NAME).tar: COPYING                                                  \
-                     README.org                                               \
-                     $(ARCHIVE_NAME).el                                       \
-                     $(ARCHIVE_NAME)-pkg.el                                   \
-                     sparql-mode                                              \
-                     ob-sparql.el
-	$(TAR) -c -s "@^@$(PACKAGE_NAME)/@" -f $(PACKAGE_NAME).tar $^
 
-install: $(PACKAGE_NAME).tar
+INSTALL="(package-install-file \"$(PWD)/dist/$(PACKAGE_NAME).tar\")"
+
+install: package
 	$(EMACS) --batch                                                          \
 	         --load package                                                   \
 	         --funcall package-initialize                                     \
-	         --eval "(package-install-file \"$(PWD)/$(PACKAGE_NAME).tar\")"
+	         --eval $(INSTALL)
 
 clean:
-	$(RM) $(ARCHIVE_NAME)-*.tar $(ARCHIVE_NAME)-pkg.el
-	$(RM) -r .cask
+	rm -r dist/

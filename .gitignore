@@ -2,3 +2,4 @@
 *.elc
 /sparql-mode-pkg.el
 /sparql-mode-*.tar
+/dist/
