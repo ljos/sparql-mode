@@ -34,7 +34,6 @@ package: dist/$(PACKAGE_NAME).tar
 dist/$(PACKAGE_NAME).tar:
 	$(CASK) package
 
-
 INSTALL="(package-install-file \"$(PWD)/dist/$(PACKAGE_NAME).tar\")"
 
 install: package
