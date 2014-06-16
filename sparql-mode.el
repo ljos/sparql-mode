@@ -9,7 +9,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.8.4
+;; Version: 0.9.0
 
 ;; This file is not part of GNU Emacs.
 
@@ -180,28 +180,27 @@ If the region is not active, use the whole buffer."
     (view-buffer-other-window sparql-results-buffer)
     (other-window -1)))
 
-(defconst sparql-keywords-re
-  (regexp-opt
-   '("ADD" "ALL" "AS" "ASC" "ASK"
-     "BASE" "BIND" "BINDINGS" "BY"
-     "CLEAR" "CONSTRUCT" "COPY" "CREATE"
-     "DATA" "DEFAULT" "DELETE" "DESC" "DESCRIBE" "DISTINCT" "DROP"
-     "EXISTS"
-     "FILTER" "FROM"
-     "GRAPH" "GROUP"
-     "HAVING"
-     "IN" "INSERT" "INTO"
-     "LIMIT" "LOAD"
-     "MINUS" "MOVE"
-     "NAMED" "NOT"
-     "OFFSET" "OPTIONAL" "ORDER"
-     "PREFIX"
-     "REDUCED"
-     "SELECT" "SERVICE" "SILENT"
-     "TO"
-     "UNDEF" "UNION" "USING"
-     "WHERE" "WITH")
-   'symbols))
+(defconst sparql--keywords
+  '("ADD" "ALL" "AS" "ASC" "ASK"
+    "BASE" "BIND" "BINDINGS" "BY"
+    "CLEAR" "CONSTRUCT" "COPY" "CREATE"
+    "DATA" "DEFAULT" "DELETE" "DESC" "DESCRIBE" "DISTINCT" "DROP"
+    "EXISTS"
+    "FILTER" "FROM"
+    "GRAPH" "GROUP"
+    "HAVING"
+    "IN" "INSERT" "INTO"
+    "LIMIT" "LOAD"
+    "MINUS" "MOVE"
+    "NAMED" "NOT"
+    "OFFSET" "OPTIONAL" "ORDER"
+    "PREFIX"
+    "REDUCED"
+    "SELECT" "SERVICE" "SILENT"
+    "TO"
+    "UNDEF" "UNION" "USING"
+    "WHERE" "WITH")
+  'symbols)
 
 (defconst sparql-keywords
   `((,(rx "<" (* (not space)) ">")
@@ -212,7 +211,7 @@ If the region is not active, use the whole buffer."
      1 font-lock-string-face)
     (,(rx (*? not-newline) (group "#" (* not-newline)))
      1 font-lock-comment-face)
-    ,sparql-keywords-re
+    ,(regexp-opt sparql--keywords)
     (,(rx (any "?$") (+ word))
      0 font-lock-variable-name-face)))
 
@@ -312,7 +311,11 @@ minibuffer."
         '(sparql-keywords
           nil ;; font-lock-keywords-only
           t   ;; font-lock-keywords-case-fold-search
-          )))
+          ))
+  (when (boundp 'company-mode)
+    (add-to-list 'company-keywords-alist
+                 (cons 'sparql-mode
+                       (sort sparql--keywords 'string<)))))
 
 (provide 'sparql-mode)
 
