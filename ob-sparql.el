@@ -61,11 +61,13 @@ to do that."
          `(("Content-Type" . "application/x-www-form-urlencoded")
            ("Accept" . ,(cdr (assoc :format params))))))
     (with-current-buffer (url-retrieve-synchronously endpoint-url)
-      (goto-char (point-min))
-      (when (string-match "^.* 200 OK$" (thing-at-point 'line))
-        (search-forward "\n\n")
-        (delete-region (point-min) (point)))
-      (buffer-string))))
+      (if (zerop (buffer-size))
+          (error "error: URL '%s' is not accessible." endpoint-url)
+        (goto-char (point-min))
+        (when (string-match "^.* 200 OK$" (thing-at-point 'line))
+          (search-forward "\n\n")
+          (delete-region (point-min) (point)))
+        (buffer-string)))))
 
 (provide 'ob-sparql)
 ;;; ob-sparql.el ends here
