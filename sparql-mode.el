@@ -9,7 +9,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.9.0
+;; Version: 0.9.2
 
 ;; This file is not part of GNU Emacs.
 
@@ -254,7 +254,7 @@ minibuffer."
 
 (defvar sparql-result-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c m") 'sparql-result-show-response)
+    (define-key map (kbd "C-c C-r") 'sparql-result-show-response)
     map)
   "Keymap for `sparql-result-mode'.")
 
@@ -285,8 +285,8 @@ minibuffer."
 (defvar sparql-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-c") 'sparql-query-region)
-    (define-key map (kbd "C-c u") 'sparql-set-base-url)
-    (define-key map (kbd "C-c f") 'sparql-set-format)
+    (define-key map (kbd "C-c C-u") 'sparql-set-base-url)
+    (define-key map (kbd "C-c C-f") 'sparql-set-format)
     map)
   "Keymap for `sparql-mode'.")
 
