@@ -211,9 +211,9 @@ If the region is not active, use the whole buffer."
      1 font-lock-string-face)
     (,(rx (*? not-newline) (group "#" (* not-newline)))
      1 font-lock-comment-face)
-    ,(regexp-opt sparql--keywords)
     (,(rx (any "?$") (+ word))
-     0 font-lock-variable-name-face)))
+     0 font-lock-variable-name-face)
+    ,(regexp-opt sparql--keywords)))
 
 (defun sparql-indent-line ()
   "Indent current line as a sparql expression."
