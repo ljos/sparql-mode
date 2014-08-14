@@ -43,4 +43,4 @@ install: package
 	         --eval $(INSTALL)
 
 clean:
-	rm -r dist/
+	-rm -r dist/
