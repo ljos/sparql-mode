@@ -162,9 +162,9 @@ If the region is not active, use the whole buffer."
          (end (if (region-active-p) (region-end) (point-max)))
          (text (buffer-substring beg end))
          (url-request-method "POST")
+	 (url-mime-accept-string (sparql-get-format))
          (url-request-extra-headers
-          `(("Content-Type" . "application/x-www-form-urlencoded")
-            ("Accept" . ,(sparql-get-format))))
+          `(("Content-Type" . "application/x-www-form-urlencoded")))
          (url-request-data (concat "query=" (url-hexify-string text)))
          (url (sparql-get-base-url)))
     (unless (buffer-live-p sparql-results-buffer)

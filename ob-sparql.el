@@ -54,12 +54,13 @@ org-babel.  This function is called by
 set to true, this function will also ask if the user really wants
 to do that."
   (message "Executing a SPARQL query block.")
+  (setq url-debug t)
   (let ((endpoint-url (cdr (assoc :url params)))
         (url-request-method "POST")
+	(url-mime-accept-string (cdr (assoc :format params)))
         (url-request-data (format "query=%s" (url-hexify-string body)))
         (url-request-extra-headers
-         `(("Content-Type" . "application/x-www-form-urlencoded")
-           ("Accept" . ,(cdr (assoc :format params))))))
+         `(("Content-Type" . "application/x-www-form-urlencoded"))))
     (with-current-buffer (url-retrieve-synchronously endpoint-url)
       (if (zerop (buffer-size))
           (error "error: URL '%s' is not accessible." endpoint-url)
