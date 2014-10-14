@@ -54,7 +54,6 @@ org-babel.  This function is called by
 set to true, this function will also ask if the user really wants
 to do that."
   (message "Executing a SPARQL query block.")
-  (setq url-debug t)
   (let ((endpoint-url (cdr (assoc :url params)))
         (url-request-method "POST")
 	(url-mime-accept-string (cdr (assoc :format params)))
