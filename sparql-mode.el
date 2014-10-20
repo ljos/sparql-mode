@@ -277,7 +277,7 @@ minibuffer."
 
     ;; make `"` and `'` be punctuations so we can do our own
     ;; font-locking.
-    (modify-syntax-entry ?\" "." syntax-table) ; " ; <-- Stop the string on github
+    (modify-syntax-entry ?\" "." syntax-table)
     (modify-syntax-entry ?\' "." syntax-table)
     syntax-table)
   "Syntax table for SPARQL-mode.")
