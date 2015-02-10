@@ -97,6 +97,51 @@
       : "http://www.openlinksw.com/schemas/virtrdf#QuadMapValue"
     #+END_SRC
 
+    We can also declare variables that will then be expanded before
+    execution. For example the following query:
+
+    #+BEGIN_SRC sparql x="friend:Julia"
+      SELECT * WHERE {
+        ?x foaf:name ?name.
+        $x foaf:email ?email.
+      }
+    #+END_SRC
+
+    will be transformed into the following before it is executed:
+
+    #+BEGIN_SRC sparql
+      SELECT * WHERE {
+        friend:Julia foaf:name ?name.
+        friend:Julia foaf:email ?email.
+      }
+    #+END_SRC
+
+    By combining this with the =#+call= syntax we can create and reuse
+    queries:
+
+    #+BEGIN_SRC org
+      ,#+NAME: count-statements-in-graph
+      ,#+BEGIN_SRC sparql :var graph="<>"
+        SELECT COUNT(*) WHERE {
+          GRAPH $graph {
+            ?s ?p ?o .
+          }
+        }
+      ,#+END_SRC
+
+      ,#+CALL: count-statements-in-graph("<http://example.com/my-graph>")
+
+      ,#+RESULTS:
+      : "callret-0"
+      : 1100
+
+      ,#+CALL: count-statements-in-graph("<http://example.com/my-other-graph>")
+
+      ,#+RESULTS:
+      : "callret-0"
+      : 100
+    #+END_SRC
+
     Notice that the server request is done synchronously and will
     therefore lock the editor if the request takes a long time.
 
