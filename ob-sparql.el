@@ -69,6 +69,9 @@ to do that."
         (when (string-match "^.* 200 OK$" (thing-at-point 'line))
           (search-forward "\n\n")
           (delete-region (point-min) (point)))
+          
+        (when (string-equal "text/csv" url-mime-accept-string)
+          (org-table-convert-region (point-min) (point-max)))
         (buffer-string)))))
 
 (provide 'ob-sparql)
