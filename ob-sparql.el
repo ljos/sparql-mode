@@ -39,6 +39,7 @@
 (require 'ob-ref)
 (require 'ob-comint)
 (require 'ob-eval)
+(require 'ob-awk)
 (require 'sparql-mode)
 
 (defvar org-babel-default-header-args:sparql
@@ -54,12 +55,13 @@ org-babel.  This function is called by
 set to true, this function will also ask if the user really wants
 to do that."
   (message "Executing a SPARQL query block.")
-  (let ((endpoint-url (cdr (assoc :url params)))
-        (url-request-method "POST")
-        (url-mime-accept-string (cdr (assoc :format params)))
-        (url-request-data (format "query=%s" (url-hexify-string body)))
-        (url-request-extra-headers
-         `(("Content-Type" . "application/x-www-form-urlencoded"))))
+  (let* ((full-body (org-babel-expand-body:awk body params))
+         (endpoint-url (cdr (assoc :url params)))
+         (url-request-method "POST")
+         (url-mime-accept-string (cdr (assoc :format params)))
+         (url-request-data (format "query=%s" (url-hexify-string full-body)))
+         (url-request-extra-headers
+          `(("Content-Type" . "application/x-www-form-urlencoded"))))
     (with-current-buffer (url-retrieve-synchronously endpoint-url)
       (if (zerop (buffer-size))
           (error "error: URL '%s' is not accessible." endpoint-url)
@@ -67,6 +69,9 @@ to do that."
         (when (string-match "^.* 200 OK$" (thing-at-point 'line))
           (search-forward "\n\n")
           (delete-region (point-min) (point)))
+          
+        (when (string-equal "text/csv" url-mime-accept-string)
+          (org-table-convert-region (point-min) (point-max)))
         (buffer-string)))))
 
 (provide 'ob-sparql)
