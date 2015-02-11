@@ -65,18 +65,18 @@ to do that."
     (with-current-buffer (url-retrieve-synchronously endpoint-url)
       (if (zerop (buffer-size))
           (error "URL '%s' is not accessible" endpoint-url)
-        (goto-char (point-min))
-        (let ((result-is-csv (string-equal "text/csv" url-mime-accept-string))
-              (query-failed (not (string-match "^.* 200 OK$" (thing-at-point 'line)))))
-          (if query-failed
+        (let ((http-result-code (url-http-parse-response))
+              (results-buffer (current-buffer)))
+          (if (not (<= 200 http-result-code 299))
               (buffer-string)
-            (search-forward "\n\n")
-            (delete-region (point-min) (point))
-            (org-babel-result-cond (cdr (assoc :result-params params))
-              (buffer-string)
-              (if result-is-csv
-                  (org-babel-sparql-convert-to-table)
-                (buffer-string)))))))))
+            (with-temp-buffer
+              (url-insert (results-buffer))
+              (org-babel-results-cond
+               (cdr (assoc :result-params params))
+               (buffer-string)
+               (if (string-equal "text/csv" url-mime-accept-string)
+                   (org-babel-sparql-convert-to-table)
+                 (buffer-string))))))))))
 
 (defun org-babel-sparql-convert-to-table ()
   "Convert the results buffer to an org-table."
