@@ -1,6 +1,7 @@
 ;;; ob-sparql.el --- org-babel functions for SPARQL queries
 
 ;; Copyright (C) 2014, 2015 Bjarte Johansen
+;; Copyright (C) 2014       Jacek Grzebyta
 ;; Copyright (C) 2015       Alf Lervåg
 
 ;; Author: Bjarte Johansen
