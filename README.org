@@ -57,7 +57,7 @@
   source-block header.
 
   By default results formatted as =text/csv= will be converted to an
-  org table. This can be disabled by adding =:results raw= to the
+  org table. This can be disabled by adding =:results scalar= to the
   header. See examples.
 
 *** Example
@@ -80,9 +80,9 @@
       | http://www.openlinksw.com/schemas/virtrdf#QuadMapValue           |
 
       If you don't want to convert the result to a table, you can override
-      that behaviour by specifying that the result should be `raw`:
+      that behaviour by specifying that the result should be `scalar`:
 
-      ,#+BEGIN_SRC sparql :url http://live.dbpedia.org/sparql :format text/csv :results raw
+      ,#+BEGIN_SRC sparql :url http://live.dbpedia.org/sparql :format text/csv :results scalar
         SELECT DISTINCT ?Concept WHERE {
           [] a ?Concept
         } LIMIT 5
