@@ -54,15 +54,16 @@ org-babel.  This function is called by
 set to true, this function will also ask if the user really wants
 to do that."
   (message "Executing a SPARQL query block.")
-  (let ((endpoint-url (cdr (assoc :url params)))
-        (url-request-method "POST")
-        (url-mime-accept-string (cdr (assoc :format params)))
-        (url-request-data (format "query=%s" (url-hexify-string body)))
-        (url-request-extra-headers
-         `(("Content-Type" . "application/x-www-form-urlencoded"))))
+  (let* ((full-body (org-babel-expand-body:sparql body params))
+         (endpoint-url (cdr (assoc :url params)))
+         (url-request-method "POST")
+         (url-mime-accept-string (cdr (assoc :format params)))
+         (url-request-data (format "query=%s" (url-hexify-string full-body)))
+         (url-request-extra-headers
+          `(("Content-Type" . "application/x-www-form-urlencoded"))))
     (with-current-buffer (url-retrieve-synchronously endpoint-url)
       (if (zerop (buffer-size))
-          (error "error: URL '%s' is not accessible." endpoint-url)
+          (error "URL '%s' is not accessible" endpoint-url)
         (goto-char (point-min))
         (let ((result-is-csv (string-equal "text/csv" url-mime-accept-string))
               (query-failed (not (string-match "^.* 200 OK$" (thing-at-point 'line)))))
@@ -81,6 +82,16 @@ to do that."
   (org-table-convert-region (point-min) (point-max) '(4))
   (let ((table (org-table-to-lisp)))
     (cons (car table) (cons 'hline (cdr table)))))
+
+(defun org-babel-expand-body:sparql (body params)
+  "Expand BODY according to PARAMS, returning expanded body.
+A variable is marked by the use of '?' or '$'; the marker is not part of
+the variable name, thus '?x' and '$x' refer to the same variable."
+  (reduce (lambda (acc pair)
+            (replace-regexp-in-string
+             (concat "[$?]" (regexp-quote (format "%s" (car pair)))) (cdr pair) acc))
+          (mapcar #'cdr (org-babel-get-header params :var))
+          :initial-value body))
 
 (provide 'ob-sparql)
 ;;; ob-sparql.el ends here
