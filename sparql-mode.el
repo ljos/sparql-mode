@@ -139,19 +139,13 @@ unless it has not been set, in which case it prompts the user."
 (defun sparql-handle-results (status &optional sparql-results-buffer)
   "Handles the results that come back from url-retrieve for a
 SPARQL query."
-  (let ((http-results-buffer (current-buffer)))
+  (let ((results-buffer (current-buffer))
+        (response (url-http-parse-response)))
     (set-buffer sparql-results-buffer)
     (let ((buffer-read-only nil))
-      (insert-buffer-substring http-results-buffer)
-      (kill-buffer http-results-buffer)
-      (delete-trailing-whitespace)
-      (goto-char (point-min))
-      (when (string-match (rx bol (* not-newline) space "200 OK" eol)
-                          (thing-at-point 'line))
-        (search-forward "\n\n")
-        (setq sparql-result-response
-              (buffer-substring (point-min) (point)))
-        (delete-region (point-min) (point)))
+      (if (not (<= 200 response 299))
+          (insert results-buffer)
+        (url-insert results-buffer))
       (setq mode-name "SPARQL[finished]"))))
 
 (defun sparql-query-region ()
