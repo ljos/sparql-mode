@@ -39,6 +39,7 @@
 ;;; Code:
 (require 'ob)
 (require 'ob-comint)
+(require 'ob-core)
 (require 'ob-eval)
 (require 'ob-ref)
 (require 'sparql-mode)
@@ -73,7 +74,7 @@ to do that."
               (buffer-string)
             (with-temp-buffer
               (url-insert (results-buffer))
-              (org-babel-results-cond
+              (org-babel-result-cond
                (cdr (assoc :result-params params))
                (buffer-string)
                (if (string-equal "text/csv" url-mime-accept-string)
