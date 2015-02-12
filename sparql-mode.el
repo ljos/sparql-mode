@@ -195,6 +195,7 @@ If the region is not active, use the whole buffer."
     "SELECT" "SERVICE" "SILENT"
     "TO"
     "UNDEF" "UNION" "USING"
+    "VALUES"
     "WHERE" "WITH")
   'symbols)
 
