@@ -44,6 +44,7 @@
 (require 'ob-ref)
 (require 'sparql-mode)
 (require 'url-handlers)
+(require 'url-http)
 
 (defvar org-babel-default-header-args:sparql
   `((:url . ,sparql-default-base-url)
