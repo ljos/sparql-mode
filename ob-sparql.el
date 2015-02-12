@@ -74,7 +74,7 @@ to do that."
           (if (not (<= 200 http-result-code 299))
               (buffer-string)
             (with-temp-buffer
-              (url-insert (results-buffer))
+              (url-insert results-buffer)
               (org-babel-result-cond
                (cdr (assoc :result-params params))
                (buffer-string)
