@@ -46,6 +46,7 @@
 ;;  (add-hook 'sparql-mode-hook 'auto-complete-mode)
 
 ;;; Code:
+(require 'url-handlers)
 
 (defgroup sparql nil
   "Major mode for editing and evaluating SPARQL queries."

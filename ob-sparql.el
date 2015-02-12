@@ -38,10 +38,11 @@
 
 ;;; Code:
 (require 'ob)
-(require 'ob-ref)
 (require 'ob-comint)
 (require 'ob-eval)
+(require 'ob-ref)
 (require 'sparql-mode)
+(require 'url-handlers)
 
 (defvar org-babel-default-header-args:sparql
   `((:url . ,sparql-default-base-url)
