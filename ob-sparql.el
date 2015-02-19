@@ -66,21 +66,16 @@ to do that."
          (url-request-data (format "query=%s" (url-hexify-string full-body)))
          (url-request-extra-headers
           `(("Content-Type" . "application/x-www-form-urlencoded"))))
-    (with-current-buffer (url-retrieve-synchronously endpoint-url)
-      (if (zerop (buffer-size))
-          (error "URL '%s' is not accessible" endpoint-url)
-        (let ((http-result-code (url-http-parse-response))
-              (results-buffer (current-buffer)))
-          (if (not (<= 200 http-result-code 299))
+    (with-temp-buffer
+      (let ((results-buffer (current-buffer)))
+        (with-current-buffer (url-retrieve-synchronously endpoint-url)
+          (sparql-handle-results nil results-buffer)
+          (with-current-buffer results-buffer
+            (org-babel-result-cond (cdr (assoc :result-params params))
               (buffer-string)
-            (with-temp-buffer
-              (url-insert results-buffer)
-              (org-babel-result-cond
-               (cdr (assoc :result-params params))
-               (buffer-string)
-               (if (string-equal "text/csv" url-mime-accept-string)
-                   (org-babel-sparql-convert-to-table)
-                 (buffer-string))))))))))
+              (if (string-equal "text/csv" url-mime-accept-string)
+                  (org-babel-sparql-convert-to-table)
+                (buffer-string)))))))))
 
 (defun org-babel-sparql-convert-to-table ()
   "Convert the results buffer to an org-table."
