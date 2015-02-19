@@ -26,12 +26,13 @@
   to the top of the file. This is a comment read by emacs to discover
   what mode to use.
 
-** Auto-complete mode
-   SPARQL-mode now also supports auto-complete-mode. Just add
+** Auto complete
+   SPARQL-mode has basic support for both =auto-complete-mode= and
+   =company-mode=. Just add your favourite completion mode to
+   =sparql-mode-hook=.
 
    #+BEGIN_SRC emacs-lisp
-   (add-to-list 'ac-dictionary-files "/path/to/sparql-mode-dir/sparql-mode")
-   (add-hook 'sparql-mode-hook 'auto-complete-mode)
+     (add-hook 'sparql-mode-hook 'your-favourite-completion-mode)
    #+END_SRC
 
 * Executing SPARQL Queries from within Emacs

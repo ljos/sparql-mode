@@ -40,11 +40,6 @@
 ;;   "Major mode for editing SPARQL files" t)
 ;;  (add-to-list 'auto-mode-alist '("\\.sparql$" . sparql-mode))
 
-;; If you want auto-complete support you can also add:
-
-;;  (add-to-list 'ac-dictionary-files "/path/to/sparql-mode-dir/sparql-mode")
-;;  (add-hook 'sparql-mode-hook 'auto-complete-mode)
-
 ;;; Code:
 (require 'url-handlers)
 
@@ -285,6 +280,10 @@ If the region is not active, use the whole buffer."
 (defalias 'sparql-parent-mode
   (if (fboundp 'prog-mode) 'prog-mode 'fundamental-mode))
 
+
+(defvar ac-source-sparql-mode
+  `((candidates . ,sparql--keywords)))
+
 ;;;###autoload
 (define-derived-mode sparql-mode sparql-parent-mode "SPARQL"
   "Major mode for SPARQL-queries.
@@ -303,6 +302,8 @@ If the region is not active, use the whole buffer."
           nil ;; font-lock-keywords-only
           t   ;; font-lock-keywords-case-fold-search
           ))
+  (when (boundp 'auto-complete-mode)
+    (add-to-list 'ac-sources 'ac-source-sparql-mode))
   (when (boundp 'company-mode)
     (add-to-list 'company-keywords-alist
                  (cons 'sparql-mode
