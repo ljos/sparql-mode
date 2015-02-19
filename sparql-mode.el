@@ -143,12 +143,15 @@ unless it has not been set, in which case it prompts the user."
 SPARQL query."
   (let ((results-buffer (current-buffer))
         (response (url-http-parse-response)))
-    (set-buffer sparql-results-buffer)
-    (let ((buffer-read-only nil))
-      (if (not (<= 200 response 299))
-          (insert results-buffer)
-        (url-insert results-buffer))
-      (setq mode-name "SPARQL[finished]"))))
+    (when (zerop (buffer-size))
+      (setq mode-name "SPARQL[error]")
+      (error "URL '%s' is not accessible" endpoint-url))
+    (with-current-buffer sparql-results-buffer
+      (let ((buffer-read-only nil))
+        (if (<= 200 response 299)
+            (url-insert results-buffer)
+          (insert results-buffer))
+        (setq mode-name "SPARQL[finished]")))))
 
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
