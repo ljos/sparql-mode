@@ -136,8 +136,6 @@ unless it has not been set, in which case it prompts the user."
   (or (and (not sparql-prompt-format) sparql-format)
       (command-execute 'sparql-set-format)))
 
-(defvar sparql-result-response)
-
 (defun sparql-handle-results (status &optional sparql-results-buffer)
   "Handles the results that come back from url-retrieve for a
 SPARQL query."
@@ -246,11 +244,6 @@ If the region is not active, use the whole buffer."
                  sparql-indent-offset)))
       (indent-line-to (or indent-column 0)))))
 
-(defun sparql-result-show-response ()
-  "Shows the header of the response from the server in the
-minibuffer."
-  (interactive)
-  (message sparql-result-response))
 
 (defvar sparql-result-mode-map
   (let ((map (make-sparse-keymap)))
@@ -260,9 +253,7 @@ minibuffer."
 
 (define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]"
   "Major mode to hold the result from the SPARQL-queries.
-\\{sparql-result-mode-map}"
-  ;; The response header from the server.
-  (make-local-variable 'sparql-result-response))
+\\{sparql-result-mode-map}")
 
 (defvar sparql-mode-syntax-table
   (let ((syntax-table (make-syntax-table)))
