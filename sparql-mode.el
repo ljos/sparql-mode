@@ -41,6 +41,7 @@
 ;;  (add-to-list 'auto-mode-alist '("\\.sparql$" . sparql-mode))
 
 ;;; Code:
+(require 'cl-lib)
 (require 'url-handlers)
 
 (defgroup sparql nil
@@ -284,6 +285,41 @@ If the region is not active, use the whole buffer."
 (defvar ac-source-sparql-mode
   `((candidates . ,sparql--keywords)))
 
+
+(defvar sparql-prefix-namespaces nil)
+(defvar company-sparql-use-prefixcc t)
+
+(defun company-sparql (command &optional arg &rest ignored)
+  "`company-mode' completion back-end for `sparql-mode'. Right
+now it only completes prefixes, `company-keywords' takes care of
+keywords."
+  (interactive (list 'interactive))
+  (cl-case command
+    (init (with-current-buffer (get-buffer-create "*SPARQL PREFIX*")
+            (when (zerop (buffer-size))
+              (when company-sparql-use-prefixcc
+                (let ((url-request-method "GET"))
+                  (url-insert
+                   (url-retrieve-synchronously
+                    "http://prefix.cc/popular/all.file.sparql")))
+                (goto-char (point-min))
+                (while (search-forward "PREFIX ")
+                  (replace-match "")))
+              (dolist (prefix sparql-prefix-namespaces)
+                (insert prefix "\n"))
+              (sort-lines nil (point-min) (point-max)))))
+    (interactive (company-begin-backend 'company-sparql))
+    (prefix (and (eq major-mode 'sparql-mode)
+                 (< 0 (buffer-size
+                       (get-buffer "*SPARQL PREFIX*")))
+                 (let ((case-fold-search t))
+                   (looking-back "^\\s-*PREFIX \\(.*\\)"))
+                 (match-string 1)))
+    (candidates (remove-if-not (lambda (c) (string-prefix-p arg c))
+                               (with-current-buffer (get-buffer "*SPARQL PREFIX*")
+                                 (split-string (buffer-string) "\n" t))))
+    (require-match 'never)))
+
 ;;;###autoload
 (define-derived-mode sparql-mode sparql-parent-mode "SPARQL"
   "Major mode for SPARQL-queries.
@@ -305,6 +341,7 @@ If the region is not active, use the whole buffer."
   (when (boundp 'auto-complete-mode)
     (add-to-list 'ac-sources 'ac-source-sparql-mode))
   (when (boundp 'company-mode)
+    (add-to-list 'company-backends 'company-sparql)
     (add-to-list 'company-keywords-alist
                  `(sparql-mode . ,sparql--keywords))))
 
