@@ -306,8 +306,7 @@ If the region is not active, use the whole buffer."
     (add-to-list 'ac-sources 'ac-source-sparql-mode))
   (when (boundp 'company-mode)
     (add-to-list 'company-keywords-alist
-                 (cons 'sparql-mode
-                       (sort sparql--keywords 'string<)))))
+                 `(sparql-mode . ,sparql--keywords))))
 
 (provide 'sparql-mode)
 
