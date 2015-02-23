@@ -124,6 +124,9 @@
       }
     #+END_SRC
 
+    Notice that =$x= and =?x= are treated as identical. This is
+    because SPARQL treats them as identical.
+
     By combining this with the =#+call= syntax we can create and reuse
     queries:
 
