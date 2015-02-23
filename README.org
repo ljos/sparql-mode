@@ -62,9 +62,10 @@
   header. See examples.
 
 *** Example
-    #+BEGIN_SRC org
-      Default behaviour for results in csv is to convert the result to a table:
+    Default behaviour for results in csv is to convert the result to a
+    table:
 
+    #+BEGIN_SRC org
       ,#+BEGIN_SRC sparql :url http://live.dbpedia.org/sparql :format text/csv
         SELECT DISTINCT ?Concept WHERE {
           [] a ?Concept
@@ -79,10 +80,13 @@
       | http://www.openlinksw.com/schemas/virtrdf#array-of-QuadMapFormat |
       | http://www.openlinksw.com/schemas/virtrdf#QuadMap                |
       | http://www.openlinksw.com/schemas/virtrdf#QuadMapValue           |
+    #+END_SRC
 
-      If you don't want to convert the result to a table, you can override
-      that behaviour by specifying that the result should be `scalar`:
+    If you don't want to convert the result to a table, you can
+    override that behaviour by specifying that the result should be
+    =scalar=:
 
+    #+BEGIN_SRC org
       ,#+HEADER: :url http://live.dbpedia.org/sparql
       ,#+HEADER: :format text/csv
       ,#+HEADER: :results scalar
