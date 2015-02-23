@@ -303,7 +303,7 @@ keywords."
                    (url-retrieve-synchronously
                     "http://prefix.cc/popular/all.file.sparql")))
                 (goto-char (point-min))
-                (while (search-forward "PREFIX ")
+                (while (search-forward "PREFIX " nil t)
                   (replace-match "")))
               (dolist (prefix sparql-prefix-namespaces)
                 (insert prefix "\n"))
