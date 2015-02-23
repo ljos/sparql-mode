@@ -307,7 +307,8 @@ keywords."
                   (replace-match "")))
               (dolist (prefix sparql-prefix-namespaces)
                 (insert prefix "\n"))
-              (sort-lines nil (point-min) (point-max)))))
+              (sort-lines nil (point-min) (point-max))
+              (bury-buffer))))
     (interactive (company-begin-backend 'company-sparql))
     (prefix (and (eq major-mode 'sparql-mode)
                  (< 0 (buffer-size
