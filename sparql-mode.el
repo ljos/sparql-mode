@@ -278,14 +278,8 @@ If the region is not active, use the whole buffer."
     map)
   "Keymap for `sparql-mode'.")
 
-;; Compatability with Emacs < 24
-(defalias 'sparql-parent-mode
-  (if (fboundp 'prog-mode) 'prog-mode 'fundamental-mode))
-
-
 (defvar ac-source-sparql-mode
   `((candidates . ,sparql--keywords)))
-
 
 (defvar sparql-prefix-namespaces nil)
 (defvar company-sparql-use-prefixcc t)
@@ -321,6 +315,10 @@ keywords."
                                (with-current-buffer (get-buffer "*SPARQL PREFIX*")
                                  (split-string (buffer-string) "\n" t))))
     (require-match 'never)))
+
+;; Compatability with Emacs < 24
+(defalias 'sparql-parent-mode
+  (if (fboundp 'prog-mode) 'prog-mode 'fundamental-mode))
 
 ;;;###autoload
 (define-derived-mode sparql-mode sparql-parent-mode "SPARQL"
