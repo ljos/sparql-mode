@@ -223,23 +223,23 @@ If the region is not active, use the whole buffer."
                               ";"
                               (* space)
                               eol)
-                          (thing-at-point 'line)))
-      (save-excursion
-        (ignore-errors
-          (while (not indent-column)
-            (backward-up-list)
-            (cond ((looking-at "{")
-                   (setq indent-column
-                         (+ (current-indentation)
-                            sparql-indent-offset)))
-                  ((looking-at "(")
-                   (setq indent-column
-                         (1+ (current-column))))))))
-      (when (looking-at "}")
-        (setq indent-column
-              (- indent-column
-                 sparql-indent-offset)))
-      (indent-line-to (or indent-column 0)))))
+                          (thing-at-point 'line))))
+    (save-excursion
+      (ignore-errors
+        (while (not indent-column)
+          (backward-up-list)
+          (cond ((looking-at "{")
+                 (setq indent-column
+                       (+ (current-indentation)
+                          sparql-indent-offset)))
+                ((looking-at "(")
+                 (setq indent-column
+                       (1+ (current-column))))))))
+    (when (looking-at "}")
+      (setq indent-column
+            (- indent-column
+               sparql-indent-offset)))
+    (indent-line-to (or indent-column 0))))
 
 
 (defvar sparql-result-mode-map
