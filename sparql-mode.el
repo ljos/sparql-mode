@@ -143,7 +143,7 @@ SPARQL query."
       (error "URL '%s' is not accessible" endpoint-url))
     (with-current-buffer sparql-results-buffer
       (let ((buffer-read-only nil))
-        (if (<= 200 response 299)
+        (if (and (<= 200 response) (<= response 299))
             (url-insert results-buffer)
           (insert results-buffer))
         (setq mode-name "SPARQL[finished]")))))
