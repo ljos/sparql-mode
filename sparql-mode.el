@@ -296,7 +296,7 @@ keywords."
                 (let ((url-request-method "GET"))
                   (url-insert
                    (url-retrieve-synchronously
-                    "http://prefix.cc/popular/all.file.sparql")))
+                    "http://prefix.cc/popular/all.file.sparql" t)))
                 (goto-char (point-min))
                 (while (search-forward "PREFIX " nil t)
                   (replace-match "")))
