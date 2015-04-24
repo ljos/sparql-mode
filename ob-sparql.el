@@ -59,23 +59,16 @@ org-babel.  This function is called by
 set to true, this function will also ask if the user really wants
 to do that."
   (message "Executing a SPARQL query block.")
-  (let* ((full-body (org-babel-expand-body:sparql body params))
-         (endpoint-url (cdr (assoc :url params)))
-         (url-request-method "POST")
-         (url-mime-accept-string (cdr (assoc :format params)))
-         (url-request-data (format "query=%s" (url-hexify-string full-body)))
-         (url-request-extra-headers
-          `(("Content-Type" . "application/x-www-form-urlencoded"))))
-    (with-temp-buffer
-      (let ((results-buffer (current-buffer)))
-        (with-current-buffer (url-retrieve-synchronously endpoint-url)
-          (sparql-handle-results nil results-buffer)
-          (with-current-buffer results-buffer
-            (org-babel-result-cond (cdr (assoc :result-params params))
-              (buffer-string)
-              (if (string-equal "text/csv" url-mime-accept-string)
-                  (org-babel-sparql-convert-to-table)
-                (buffer-string)))))))))
+  (with-temp-buffer
+    (insert (sparql-execute-query (org-babel-expand-body:sparql body params)
+				  t
+				  (cdr (assoc :url params))
+				  (cdr (assoc :format params))))
+    (org-babel-result-cond (cdr (assoc :result-params params))
+      (buffer-string)
+      (if (string-equal "text/csv" url-mime-accept-string)
+	  (org-babel-sparql-convert-to-table)
+	(buffer-string)))))
 
 (defun org-babel-sparql-convert-to-table ()
   "Convert the results buffer to an org-table."

@@ -148,29 +148,38 @@ SPARQL query."
           (insert results-buffer))
         (setq mode-name "SPARQL[finished]")))))
 
+(defun sparql-execute-query (query &optional synch url format)
+  "Submit the given `query' string to the endpoint at the given
+`url'. If `synch' is true the query is sent synchronously
+otherwise it is asynchronously. `format' specifies the return
+format of the response from the server."
+  (let ((url-request-method "POST")
+	(url-request-extra-headers
+	 `(("Content-Type" . "application/x-www-form-urlencoded")))
+	(url-mime-accept-string (or format (sparql-get-format)))
+	(url-request-data (concat "query=" (url-hexify-string query))))
+    (if synch
+	(with-temp-buffer
+	  (let ((results-buffer (current-buffer)))
+	    (with-current-buffer (url-retrieve-synchronously url)
+	      (sparql-handle-results nil results-buffer)))
+	  (buffer-string))
+      (url-retrieve (or url (sparql-get-base-url))
+		    #'sparql-handle-results
+		    (list sparql-results-buffer)))))
+
 (defun sparql-query-region ()
   "Submit the active region as a query to a SPARQL HTTP endpoint.
 If the region is not active, use the whole buffer."
   (interactive)
   (let* ((beg (if (region-active-p) (region-beginning) (point-min)))
          (end (if (region-active-p) (region-end) (point-max)))
-         (text (buffer-substring beg end))
-         (url-request-method "POST")
-         (url-mime-accept-string (sparql-get-format))
-         (url-request-extra-headers
-          `(("Content-Type" . "application/x-www-form-urlencoded")))
-         (url-request-data (concat "query=" (url-hexify-string text)))
-         (url (sparql-get-base-url)))
-    (unless (buffer-live-p sparql-results-buffer)
-      (setq sparql-results-buffer
-            (generate-new-buffer (format "*SPARQL: %s*" (buffer-name)))))
-    (save-current-buffer
-      (set-buffer sparql-results-buffer)
-      (sparql-result-mode)
+         (query (buffer-substring beg end)))
+    (with-current-buffer (get-buffer-create (format "*SPARQL: %s*" (buffer-name)))
+      (sparql-result-mode t)
       (let ((buffer-read-only nil))
-        (delete-region (point-min) (point-max)))
-      (setq buffer-read-only t))
-    (url-retrieve url 'sparql-handle-results (list sparql-results-buffer))
+	(delete-region (point-min) (point-max))))
+    (sparql-execute-query query)
     (view-buffer-other-window sparql-results-buffer)
     (other-window -1)))
 
@@ -248,7 +257,7 @@ If the region is not active, use the whole buffer."
     map)
   "Keymap for `sparql-result-mode'.")
 
-(define-derived-mode sparql-result-mode text-mode "SPARQL[waiting]"
+(define-derived-mode sparql-result-mode read-only-mode "SPARQL[waiting]"
   "Major mode to hold the result from the SPARQL-queries.
 \\{sparql-result-mode-map}")
 
