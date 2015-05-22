@@ -222,12 +222,8 @@ If the region is not active, use the whole buffer."
     (save-excursion
       (forward-line -1)
       (setq indent-column
-            (string-match (rx (+ (not space)) (+ space)
-                              (+ (not space))
-                              ";"
-                              (* space)
-                              eol)
-                          (thing-at-point 'line))))
+            (string-match "\\S-+\\s-+\\S-+;\\s-*$"
+			  (thing-at-point 'line))))
     (save-excursion
       (ignore-errors
         (while (not indent-column)
