@@ -207,11 +207,11 @@ If the region is not active, use the whole buffer."
   'symbols)
 
 (defconst sparql-keywords
-  `(("<[^[:space:]]*>"         0 font-lock-constant-face t)
+  `(("<\\S-*>"                 0 font-lock-constant-face t)
     ("^[^#]*?\\(\"[^\"]*\"\\)" 1 font-lock-string-face)
     ("^[^#]*?\\('[^']*'\\)"    1 font-lock-string-face)
     (".*?\\(#.*\\)"            1 font-lock-comment-face)
-    ("[$?][[:word:]]+"         0 font-lock-variable-name-face)
+    ("[$?]\\w+"                0 font-lock-variable-name-face)
     ,(concat "\\b" (regexp-opt sparql--keywords) "\\b")))
 
 (defun sparql-indent-line ()
