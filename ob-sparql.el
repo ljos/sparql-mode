@@ -80,7 +80,7 @@ to do that."
   "Expand BODY according to PARAMS, returning expanded body.
 A variable is marked by the use of '?' or '$'; the marker is not part of
 the variable name, thus '?x' and '$x' refer to the same variable."
-  (reduce (lambda (acc pair)
+  (org-reduce (lambda (acc pair)
             (replace-regexp-in-string
              (concat "[$?]" (regexp-quote (format "%s" (car pair)))) (cdr pair) acc))
           (mapcar #'cdr (org-babel-get-header params :var))
