@@ -177,7 +177,7 @@ If the region is not active, use the whole buffer."
          (end (if (region-active-p) (region-end) (point-max)))
          (query (buffer-substring beg end)))
     (with-current-buffer (get-buffer-create (format "*SPARQL: %s*" (buffer-name)))
-      (sparql-result-mode t)
+      (sparql-result-mode)
       (let ((buffer-read-only nil))
 	(delete-region (point-min) (point-max))))
     (sparql-execute-query query)
