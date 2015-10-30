@@ -32,10 +32,9 @@
 
 ;; Mode for editing and interactively evaluating SPARQL queries.
 
-;; Usage:
+;;; Usage:
 
 ;; Add to your Emacs config:
-
 ;;  (add-to-list 'load-path "/path/to/sparql-mode-dir")
 ;;  (autoload 'sparql-mode "sparql-mode.el"
 ;;   "Major mode for editing SPARQL files" t)
