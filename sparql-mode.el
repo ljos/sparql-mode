@@ -312,9 +312,9 @@ keywords."
                  (let ((case-fold-search t))
                    (looking-back "^\\s-*PREFIX \\(.*\\)"))
                  (match-string 1)))
-    (candidates (remove-if-not (lambda (c) (string-prefix-p arg c))
-                               (with-current-buffer (get-buffer "*SPARQL PREFIX*")
-                                 (split-string (buffer-string) "\n" t))))
+    (candidates (cl-remove-if-not (lambda (c) (string-prefix-p arg c))
+                                  (with-current-buffer (get-buffer "*SPARQL PREFIX*")
+                                    (split-string (buffer-string) "\n" t))))
     (require-match 'never)))
 
 ;; Compatability with Emacs < 24
