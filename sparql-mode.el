@@ -241,17 +241,6 @@ If the region is not active, use the whole buffer."
                sparql-indent-offset)))
     (indent-line-to (or indent-column 0))))
 
-
-(defvar sparql-result-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c C-r") 'sparql-result-show-response)
-    map)
-  "Keymap for `sparql-result-mode'.")
-
-(define-derived-mode sparql-result-mode read-only-mode "SPARQL[waiting]"
-  "Major mode to hold the result from the SPARQL-queries.
-\\{sparql-result-mode-map}")
-
 (defvar sparql-mode-syntax-table
   (let ((syntax-table (make-syntax-table)))
     ;; Let `?` and `_` be part of a word so that a variable will be
@@ -315,6 +304,10 @@ keywords."
                                   (with-current-buffer (get-buffer "*SPARQL PREFIX*")
                                     (split-string (buffer-string) "\n" t))))
     (require-match 'never)))
+
+(define-derived-mode sparql-result-mode read-only-mode "SPARQL[waiting]"
+  "Major mode to hold the result from the SPARQL-queries."
+  :group 'sparql-result-mode)
 
 ;; Compatability with Emacs < 24
 (defalias 'sparql-parent-mode
