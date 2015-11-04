@@ -10,7 +10,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 0.11.1
+;; Version: 0.11.2
 ;; Package-Requires: ((cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
@@ -174,9 +174,14 @@ If the region is not active, use the whole buffer."
   (interactive)
   (let* ((beg (if (region-active-p) (region-beginning) (point-min)))
          (end (if (region-active-p) (region-end) (point-max)))
-         (query (buffer-substring beg end)))
-    (with-current-buffer (get-buffer-create (format "*SPARQL: %s*" (buffer-name)))
-      (sparql-result-mode)
+         (query (buffer-substring-no-properties beg end)))
+    (unless (and sparql-results-buffer
+		 (buffer-live-p sparql-results-buffer))
+      (setq sparql-results-buffer (get-buffer-create
+				   (format "*SPARQL: %s*" (buffer-name))))
+      (with-current-buffer sparql-results-buffer
+	(sparql-result-mode)))
+    (with-current-buffer sparql-results-buffer
       (let ((buffer-read-only nil))
 	(delete-region (point-min) (point-max))))
     (sparql-execute-query query)
