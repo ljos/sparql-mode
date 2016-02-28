@@ -136,6 +136,7 @@ unless it has not been set, in which case it prompts the user."
 (defun sparql-handle-results (status &optional sparql-results-buffer)
   "Handles the results that come back from url-retrieve for a
 SPARQL query."
+  ;; The result is expected to be in (current-buffer). This is how `url-retrieve` works.
   (let ((results-buffer (current-buffer))
         (response (url-http-parse-response)))
     (when (zerop (buffer-size))
@@ -153,18 +154,25 @@ SPARQL query."
 `url'. If `synch' is true the query is sent synchronously
 otherwise it is asynchronously. `format' specifies the return
 format of the response from the server."
+  ;; BUG: url-mime-accept-string isn't transported correctly to url-retrive in async mode
+  ;;      In fact, I don't think it's possible at all to the "Accept" header when using async!
+  ;;      To me this seems like a bug in url-retrieve (olejorgenb)
+  ;; NOTE: Not all sparql endpoint expect the "Accept" header to be used for format handling
+  (setq url (or url (sparql-get-base-url)))
+
   (let ((url-request-method "POST")
 	(url-request-extra-headers
 	 `(("Content-Type" . "application/x-www-form-urlencoded")))
 	(url-mime-accept-string (or format (sparql-get-format)))
 	(url-request-data (concat "query=" (url-hexify-string query))))
     (if synch
-	(with-temp-buffer
-	  (let ((results-buffer (current-buffer)))
-	    (with-current-buffer (url-retrieve-synchronously url)
-	      (sparql-handle-results nil results-buffer)))
-	  (buffer-string))
-      (url-retrieve (or url (sparql-get-base-url))
+	(let ((non-buffer-local sparql-results-buffer))
+          ;; Otherwise the local-to-temp-buffer version of `sparql-results-buffer'
+          ;; will be used. Note that it's not possible to make let shadow buffer
+          ;; local variables...
+          (with-current-buffer (url-retrieve-synchronously url)
+            (sparql-handle-results nil non-buffer-local)))
+      (url-retrieve url
 		    #'sparql-handle-results
 		    (list sparql-results-buffer)))))
 
