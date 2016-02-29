@@ -133,53 +133,52 @@ unless it has not been set, in which case it prompts the user."
   (or (and (not sparql-prompt-format) sparql-format)
       (command-execute 'sparql-set-format)))
 
-(defun sparql-handle-results (status &optional sparql-results-buffer)
+(defun sparql-handle-results (status &optional output-buffer)
   "Handles the results that come back from url-retrieve for a
 SPARQL query."
-  ;; The result is expected to be in (current-buffer). This is how `url-retrieve` works.
-  (let ((results-buffer (current-buffer))
+  ;; The response from the server is expected to be in the
+  ;; `current-buffer'. This is how `url-retrieve' works.
+  (let ((results (current-buffer))
         (response (url-http-parse-response)))
     (when (zerop (buffer-size))
       (setq mode-name "SPARQL[error]")
       (error "URL '%s' is not accessible" endpoint-url))
-    (with-current-buffer sparql-results-buffer
+    (with-current-buffer output-buffer
       (let ((buffer-read-only nil))
         (if (and (<= 200 response) (<= response 299))
-            (url-insert results-buffer)
-          (insert results-buffer))
+            (url-insert results)
+          (insert results))
         (setq mode-name "SPARQL[finished]")))))
 
-(defun sparql-execute-query (query &optional synch url format)
+(defun sparql-execute-query (query result-buffer &optional synch url format)
   "Submit the given `query' string to the endpoint at the given
-`url'. If `synch' is true the query is sent synchronously
-otherwise it is asynchronously. `format' specifies the return
-format of the response from the server."
-  ;; BUG: url-mime-accept-string isn't transported correctly to url-retrive in async mode
-  ;;      In fact, I don't think it's possible at all to the "Accept" header when using async!
-  ;;      To me this seems like a bug in url-retrieve (olejorgenb)
-  ;; NOTE: Not all sparql endpoint expect the "Accept" header to be used for format handling
-  (setq url (or url (sparql-get-base-url)))
-
+`url'.  `buffer' specifies where to put the results from the
+request.  If `synch' is true the query is sent synchronously
+otherwise it is asynchronously.  `format' specifies the return
+format of the response from the server. "
   (let ((url-request-method "POST")
 	(url-request-extra-headers
 	 `(("Content-Type" . "application/x-www-form-urlencoded")))
+	;; BUG: `url-mime-accept-string' isn't always transported
+	;;      correctly to `url-retrieve' in async mode.  To me this
+	;;      seems like a bug in `url-retrieve' (olejorgenb)
+	;;
+	;;NOTE: Not all sparql endpoint expect the "Accept" header to
+	;;      be used for format handling.
 	(url-mime-accept-string (or format (sparql-get-format)))
-	(url-request-data (concat "query=" (url-hexify-string query))))
+	(url-request-data (concat "query=" (url-hexify-string query)))
+	(url (or url (sparql-get-base-url))))
     (if synch
-	(let ((non-buffer-local sparql-results-buffer))
-          ;; Otherwise the local-to-temp-buffer version of `sparql-results-buffer'
-          ;; will be used. Note that it's not possible to make let shadow buffer
-          ;; local variables...
-          (with-current-buffer (url-retrieve-synchronously url)
-            (sparql-handle-results nil non-buffer-local)))
-      (url-retrieve url
-		    #'sparql-handle-results
-		    (list sparql-results-buffer)))))
+	(with-current-buffer (url-retrieve-synchronously url)
+	  (sparql-handle-results nil result-buffer))
+      (url-retrieve url #'sparql-handle-results (list result-buffer)))))
 
-(defun sparql-query-region ()
+(defun sparql-query-region (&optional synch)
   "Submit the active region as a query to a SPARQL HTTP endpoint.
-If the region is not active, use the whole buffer."
-  (interactive)
+If the region is not active, use the whole buffer.  If a prefix
+argument is given the command is run synchronously instead of
+asynchronously."
+  (interactive "P")
   (let* ((beg (if (region-active-p) (region-beginning) (point-min)))
          (end (if (region-active-p) (region-end) (point-max)))
          (query (buffer-substring-no-properties beg end)))
@@ -192,7 +191,7 @@ If the region is not active, use the whole buffer."
     (with-current-buffer sparql-results-buffer
       (let ((buffer-read-only nil))
 	(delete-region (point-min) (point-max))))
-    (sparql-execute-query query)
+    (sparql-execute-query query sparql-results-buffer synch)
     (view-buffer-other-window sparql-results-buffer)
     (other-window -1)))
 

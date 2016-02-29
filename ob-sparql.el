@@ -60,15 +60,16 @@ set to true, this function will also ask if the user really wants
 to do that."
   (message "Executing a SPARQL query block.")
   (let ((url (cdr (assoc :url params)))
-        (format (cdr (assoc :format params))))
+        (format (cdr (assoc :format params)))
+	(query (org-babel-expand-body:sparql body params)))
     (with-temp-buffer
-      (insert (sparql-execute-query (org-babel-expand-body:sparql body params)
-                                    t url format))
-      (org-babel-result-cond (cdr (assoc :result-params params))
-        (buffer-string)
-        (if (string-equal "text/csv" format)
-            (org-babel-sparql-convert-to-table)
-          (buffer-string))))))
+      (sparql-execute-query query (current-buffer) t url format)
+      (org-babel-result-cond
+       (cdr (assoc :result-params params))
+       (buffer-string)
+       (if (string-equal "text/csv" format)
+	   (org-babel-sparql-convert-to-table)
+	 (buffer-string))))))
 
 (defun org-babel-sparql-convert-to-table ()
   "Convert the results buffer to an org-table."

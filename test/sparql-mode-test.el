@@ -31,20 +31,32 @@
     "Send an asynchrounous query to a sparql endpoint."
     (with-temp-buffer
       (let ((sparql-results-buffer (current-buffer))
-	    status)
+	    status
+	    result)
 	(cl-letf (((symbol-function 'sparql-handle-results)
 		   (lambda (&rest _)
-		     (setq status (url-http-parse-response)))))
+		     (let ((res (current-buffer)))
+		       (setq status (url-http-parse-response))
+		       (unless (zerop (buffer-size))
+			 (with-temp-buffer
+			   (url-insert res)
+			   (goto-char (point-min))
+                           (kill-whole-line)
+			   (setq result (buffer-string))))))))
 	  (with-timeout (10 (ert-fail "Could not wait for query anymore.")))
 	  (let ((proc (get-buffer-process
 		       (sparql-execute-query
 			"SELECT ?Concept WHERE {[] a ?Concept} LIMIT 1"
 			nil
 			"http://dbpedia.org/sparql/"
-			"text/csv"))))
+			"application/sparql-results+json"))))
 	    (while (not status)
 	      (accept-process-output proc 1))))
-	(should (<= 200 status 299)))))
+	(should (and (<= 200 status 299)
+		     (with-temp-buffer
+		       (insert result)
+                       (goto-char (point-min))
+		       (json-read)))))))
 
 
 (ert-deftest sparql-test-sych-execute-query ()
