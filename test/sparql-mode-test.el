@@ -26,6 +26,7 @@
 (require 'cl)
 (require 'ert)
 (require 'sparql-mode)
+(require 'json)
 
 (ert-deftest sparql-test-execute-query ()
     "Send an asynchrounous query to a sparql endpoint."
@@ -44,14 +45,16 @@
                            (kill-whole-line)
 			   (setq result (buffer-string))))))))
 	  (with-timeout (10 (ert-fail "Could not wait for query anymore.")))
-	  (let ((proc (get-buffer-process
-		       (sparql-execute-query
-			"SELECT ?Concept WHERE {[] a ?Concept} LIMIT 1"
-			nil
-			"http://dbpedia.org/sparql/"
-			"application/sparql-results+json"))))
-	    (while (not status)
-	      (accept-process-output proc 1))))
+	  (with-temp-buffer
+	    (let ((proc (get-buffer-process
+			 (sparql-execute-query
+			  "SELECT ?Concept WHERE {[] a ?Concept} LIMIT 1"
+			  (current-buffer)
+			  nil
+			  "http://dbpedia.org/sparql/"
+			  "application/sparql-results+json"))))
+	      (while (not status)
+		(accept-process-output proc 1)))))
 	(should (and (<= 200 status 299)
 		     (with-temp-buffer
 		       (insert result)
@@ -65,9 +68,11 @@
     (cl-letf (((symbol-function 'sparql-handle-results)
 	       (lambda (&rest _)
 		 (setq status (url-http-parse-response)))))
-      (sparql-execute-query
-       "SELECT ?Concept WHERE {[] a ?Concept} LIMIT 1"
-       t
-       "http://dbpedia.org/sparql/"
-       "text/csv")
+      (with-temp-buffer
+	(sparql-execute-query
+	 "SELECT ?Concept WHERE {[] a ?Concept} LIMIT 1"
+	 (current-buffer)
+	 t
+	 "http://dbpedia.org/sparql/"
+	 "text/csv"))
       (should (<= 200 status 299)))))
