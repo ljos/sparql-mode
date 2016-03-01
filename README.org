@@ -109,7 +109,7 @@
     We can also declare variables that will then be expanded before
     execution. For example the following query:
 
-    #+BEGIN_SRC sparql x="friend:Julia"
+    #+BEGIN_SRC sparql :var x="friend:Julia"
       SELECT * WHERE {
         ?x foaf:name ?name.
         $x foaf:email ?email.

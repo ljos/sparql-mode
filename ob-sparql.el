@@ -38,24 +38,19 @@
 
 ;;; Code:
 (require 'ob)
-(require 'ob-comint)
-(require 'ob-core)
-(require 'ob-eval)
-(require 'ob-ref)
 (require 'sparql-mode)
-(require 'url-handlers)
-(require 'url-http)
+
+(declare-function org-table-convert-region "org-table" (beg0 end0 &optional separator))
+(declare-function org-table-to-lisp "org-table" (&optional txt))
 
 (defvar org-babel-default-header-args:sparql
   `((:url . ,sparql-default-base-url)
     (:format . ,sparql-default-format))
-  "Default arguments for evaluating a SPARQL query
-block.")
+  "Default arguments for evaluating a SPARQL query block.")
 
 (defun org-babel-execute:sparql (body params)
-  "Execute a block containing a SPARQL query with
-org-babel.  This function is called by
-`org-babel-execute-src-block'."
+  "Execute a block containing a SPARQL query with org-babel.
+This function is called by `org-babel-execute-src-block'."
   (message "Executing a SPARQL query block.")
   (let ((url (cdr (assoc :url params)))
         (format (cdr (assoc :format params)))
@@ -77,15 +72,19 @@ org-babel.  This function is called by
 
 (defun org-babel-expand-body:sparql (body params)
   "Expand BODY according to PARAMS, returning expanded body.
-A variable is marked by the use of '?' or '$'; the marker is not part of
-the variable name, thus '?x' and '$x' refer to the same variable."
-  (org-reduce (lambda (acc pair)
-		(replace-regexp-in-string
-		 (concat "[$?]" (regexp-quote (format "%s" (car pair))))
-		 (cdr pair)
-		 acc))
-          (mapcar #'cdr (org-babel-get-header params :var))
-          :initial-value body))
+A variable is marked by the use of '?' or '$'; the marker is not
+part of the variable name, thus '?x' and '$x' refer to the same
+variable."
+  (with-temp-buffer
+    (insert body)
+    (let ((case-fold-search nil)
+	  (case-replace nil))
+      (dolist (pair (mapcar #'cdr (org-babel-get-header params :var)))
+	(goto-char (point-min))
+	(replace-regexp (concat "[$?]"
+				(regexp-quote (format "%s" (car pair))))
+			(cdr pair))))
+    (buffer-string)))
 
 (provide 'ob-sparql)
 ;;; ob-sparql.el ends here
