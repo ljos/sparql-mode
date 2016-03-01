@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 1.0.1
+;; Version: 1.1.1
 ;; Package-Requires: ((cl-lib "0.5") (async "1.6"))
 
 ;; This file is not part of GNU Emacs.
@@ -44,6 +44,7 @@
 
 ;;; Code:
 (require 'cl-lib)
+(require 'async)
 
 (defgroup sparql nil
   "Major mode for editing and evaluating SPARQL queries."
