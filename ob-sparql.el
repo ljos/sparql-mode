@@ -7,7 +7,7 @@
 ;; Author: Bjarte Johansen
 ;; Keywords: literate programming, reproducible research
 ;; Homepage: http://www.github.com/ljos/sparql-mode
-;; Version: 0.1.1
+;; Version: 1.1.0
 
 ;;; License:
 
@@ -63,7 +63,7 @@ to do that."
         (format (cdr (assoc :format params)))
 	(query (org-babel-expand-body:sparql body params)))
     (with-temp-buffer
-      (sparql-execute-query query (current-buffer) t url format)
+      (sparql-execute-query query t url format)
       (org-babel-result-cond
        (cdr (assoc :result-params params))
        (buffer-string)

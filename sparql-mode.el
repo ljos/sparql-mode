@@ -133,24 +133,25 @@ unless it has not been set, in which case it prompts the user."
   (or (and (not sparql-prompt-format) sparql-format)
       (command-execute 'sparql-set-format)))
 
-(defun sparql-execute-query (query result-buffer &optional synch url format)
+(defun sparql-execute-query (query &optional synch url format)
   "Submit the given `query' string to the endpoint at the given
-`url'.  `buffer' specifies where to put the results from the
-request.  If `synch' is true the query is sent synchronously
-otherwise it is asynchronously.  `format' specifies the return
-format of the response from the server. Note: This uses the the
-mime accept header to set the format and not all sparql endpoints
-expect that."
+`url'.  `sparql-execute-query' inserts the result of the query
+into the current buffer.  If `synch' is true the query is sent
+synchronously otherwise it is asynchronously.  `format' specifies
+the return format of the response from the server. Note: This
+uses the the mime accept header to set the format and not all
+sparql endpoints expect that."
   (lexical-let*
-      ((result-buf result-buffer)
+      ((result-buffer (current-buffer))
+       (endpoint-url (or url (sparql-get-base-url)))
+       (mime-accept-string (or format (sparql-get-format)))
        (finish (lambda (result)
-		 (with-current-buffer result-buf
+		 (with-current-buffer result-buffer
 		   (when (string= "" result)
 		     (setq mode-name "SPARQL[error]")
 		     (error "URL '%s' is not accessible" endpoint-url))
-		   (let ((buffer-read-only nil))
-		     (setq mode-name "SPARQL[finished]")
-		     (insert result)))))
+		   (setq mode-name "SPARQL[finished]")
+		   (insert result))))
        (proc (async-start
 	      `(lambda ()
 		 (require 'url)
@@ -159,9 +160,8 @@ expect that."
 		       (url-request-extra-headers
 			'(("Content-Type" . "application/x-www-form-urlencoded")))
 		       (url-request-data ,(concat "query=" (url-hexify-string query)))
-		       (url ,(or url (sparql-get-base-url)))
-		       (url-mime-accept-string ,(or format (sparql-get-format))))
-		   (with-current-buffer (url-retrieve-synchronously url)
+		       (url-mime-accept-string ,mime-accept-string))
+		   (with-current-buffer (url-retrieve-synchronously ,endpoint-url)
 		     (let ((results (current-buffer))
 			   (response (url-http-parse-response)))
 		       (with-temp-buffer
@@ -170,7 +170,8 @@ expect that."
 			   (insert results))
 			 (buffer-string))))))
 	      (unless synch finish))))
-    (if synch (funcall finish (async-get proc)))))
+    (when synch
+      (funcall finish (async-get proc)))))
 
 (defun sparql-query-region (&optional synch)
   "Submit the active region as a query to a SPARQL HTTP endpoint.
@@ -189,8 +190,8 @@ asynchronously."
 	(sparql-result-mode)))
     (with-current-buffer sparql-results-buffer
       (let ((buffer-read-only nil))
-	(delete-region (point-min) (point-max))))
-    (sparql-execute-query query sparql-results-buffer synch)
+	(delete-region (point-min) (point-max))
+	(sparql-execute-query query synch)))
     (view-buffer-other-window sparql-results-buffer)
     (other-window -1)))
 
