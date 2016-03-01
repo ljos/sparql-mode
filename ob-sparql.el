@@ -55,9 +55,7 @@ block.")
 (defun org-babel-execute:sparql (body params)
   "Execute a block containing a SPARQL query with
 org-babel.  This function is called by
-`org-babel-execute-src-block'. If `es-warn-on-delete-query' is
-set to true, this function will also ask if the user really wants
-to do that."
+`org-babel-execute-src-block'."
   (message "Executing a SPARQL query block.")
   (let ((url (cdr (assoc :url params)))
         (format (cdr (assoc :format params)))
