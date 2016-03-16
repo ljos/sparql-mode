@@ -7,7 +7,7 @@
 ;; Author: Bjarte Johansen
 ;; Keywords: literate programming, reproducible research
 ;; Homepage: http://www.github.com/ljos/sparql-mode
-;; Version: 1.1.0
+;; Version: 1.1.1
 
 ;;; License:
 
@@ -81,9 +81,10 @@ variable."
 	  (case-replace nil))
       (dolist (pair (mapcar #'cdr (org-babel-get-header params :var)))
 	(goto-char (point-min))
-	(replace-regexp (concat "[$?]"
-				(regexp-quote (format "%s" (car pair))))
-			(cdr pair))))
+	(let ((regexp (concat "[$?]" (regexp-quote (format "%s" (car pair)))))
+	      (replacement (cdr pair)))
+	  (while (re-search-forward regexp nil t)
+	    (replace-match replacement nil nil)))))
     (buffer-string)))
 
 (provide 'ob-sparql)
