@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 1.1.1
+;; Version: 1.1.2
 ;; Package-Requires: ((cl-lib "0.5") (async "1.6"))
 
 ;; This file is not part of GNU Emacs.
@@ -43,8 +43,12 @@
 ;;  (add-to-list 'auto-mode-alist '("\\.rq$" . sparql-mode))
 
 ;;; Code:
-(require 'cl-lib)
 (require 'async)
+(require 'cl-lib)
+(require 'url-handlers)
+
+(eval-when-compile
+  (require 'cl))
 
 (defgroup sparql nil
   "Major mode for editing and evaluating SPARQL queries."
@@ -151,8 +155,9 @@ sparql endpoints expect that."
 		   (when (string= "" result)
 		     (setq mode-name "SPARQL[error]")
 		     (error "URL '%s' is not accessible" endpoint-url))
-		   (setq mode-name "SPARQL[finished]")
-		   (insert result))))
+		   (let ((buffer-read-only nil))
+		     (insert result))
+		   (setq mode-name "SPARQL[finished]"))))
        (proc (async-start
 	      `(lambda ()
 		 (require 'url)
