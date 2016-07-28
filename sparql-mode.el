@@ -152,7 +152,7 @@ sparql endpoints expect that."
        (mime-accept-string (or format (sparql-get-format)))
        (finish (lambda (result)
 		 (with-current-buffer result-buffer
-		   (when (string= "" result)
+		   (when (null result)
 		     (setq mode-name "SPARQL[error]")
 		     (error "URL '%s' is not accessible" endpoint-url))
 		   (let ((buffer-read-only nil))
@@ -168,13 +168,14 @@ sparql endpoints expect that."
 		       (url-request-data ,(concat "query=" (url-hexify-string query)))
 		       (url-mime-accept-string ,mime-accept-string))
 		   (with-current-buffer (url-retrieve-synchronously ,endpoint-url)
-		     (let ((results (current-buffer))
-			   (response (url-http-parse-response)))
-		       (with-temp-buffer
-			 (if (and (<= 200 response) (<= response 299))
-			     (url-insert results)
-			   (insert results))
-			 (buffer-string))))))
+		     (ignore-errors
+		       (let ((results (current-buffer))
+			     (response (url-http-parse-response)))
+			 (with-temp-buffer
+			   (if (and (<= 200 response) (<= response 299))
+			       (url-insert results)
+			     (insert results))
+			   (buffer-string)))))))
 	      (unless synch finish))))
     (when synch
       (funcall finish (async-get proc)))))
