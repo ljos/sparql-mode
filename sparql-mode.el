@@ -226,11 +226,11 @@ asynchronously."
   'symbols)
 
 (defconst sparql-keywords
-  `(("<\\S-*>"                 0 font-lock-constant-face t)
-    ("^[^#]*?\\(\"[^\"]*\"\\)" 1 font-lock-string-face)
-    ("^[^#]*?\\('[^']*'\\)"    1 font-lock-string-face)
-    (".*?\\(#.*\\)"            1 font-lock-comment-face)
-    ("[$?]\\w+"                0 font-lock-variable-name-face)
+  `(("<\\S-*>"      0 font-lock-constant-face t)
+    ("\"[^\"]*\""   . font-lock-string-face)
+    ("'[^']*'"      . font-lock-string-face)
+    (".*?\\(#.*\\)" 1 font-lock-comment-face)
+    ("[$?]\\w+"     0 font-lock-variable-name-face)
     ,(concat "\\b" (regexp-opt sparql--keywords) "\\b")))
 
 (defun sparql-indent-line ()
