@@ -271,10 +271,14 @@ asynchronously."
     (modify-syntax-entry ?# "<" syntax-table)
     (modify-syntax-entry ?\n ">" syntax-table)
 
-    ;; make `"` and `'` be punctuations so we can do our own
-    ;; font-locking.
-    (modify-syntax-entry ?\" "." syntax-table)
-    (modify-syntax-entry ?\' "." syntax-table)
+    ;; Strings
+    (modify-syntax-entry ?\' "\"'"  syntax-table)
+    (modify-syntax-entry ?\" "\"\"" syntax-table)
+
+    ;; URIs
+    ;; Temporary fix to make # inside urls work better.
+    (modify-syntax-entry ?\< "|" syntax-table)
+    (modify-syntax-entry ?\> "|" syntax-table)
     syntax-table)
   "Syntax table for SPARQL-mode.")
 
