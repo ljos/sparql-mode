@@ -325,6 +325,11 @@ keywords."
                                     (split-string (buffer-string) "\n" t))))
     (require-match 'never)))
 
+(eval-after-load 'company
+  '(push 'company-sparql company-backends))
+(eval-after-load 'company-keywords
+  '(push `(sparql-mode . ,sparql--keywords) company-keywords-alist))
+
 (define-derived-mode sparql-result-mode read-only-mode "SPARQL[waiting]"
   "Major mode to hold the result from the SPARQL-queries."
   :group 'sparql-result-mode)
@@ -352,11 +357,7 @@ keywords."
           t   ;; font-lock-keywords-case-fold-search
           ))
   (when (boundp 'auto-complete-mode)
-    (add-to-list 'ac-sources 'ac-source-sparql-mode))
-  (when (boundp 'company-mode)
-    (add-to-list 'company-backends 'company-sparql)
-    (add-to-list 'company-keywords-alist
-                 `(sparql-mode . ,sparql--keywords))))
+    (add-to-list 'ac-sources 'ac-source-sparql-mode)))
 
 (provide 'sparql-mode)
 
