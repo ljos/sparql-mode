@@ -225,11 +225,6 @@ asynchronously."
     "WHERE" "WITH")
   'symbols)
 
-(defconst sparql-keywords
-  `(("<\\S-*>"      0 font-lock-constant-face t)
-    ("[$?]\\w+"     0 font-lock-variable-name-face)
-    ,(concat "\\b" (regexp-opt sparql--keywords) "\\b")))
-
 (defun sparql-indent-line ()
   "Indent current line as a sparql expression."
   (interactive)
@@ -257,6 +252,11 @@ asynchronously."
                sparql-indent-offset)))
     (indent-line-to (or indent-column 0))))
 
+(defconst sparql-keywords
+  `(("<\\S-*>" 0 font-lock-constant-face t)
+    ("[$?]\\w+" 0 font-lock-variable-name-face)
+    ,(concat "\\b" (regexp-opt sparql--keywords) "\\b")))
+
 (defvar sparql-mode-syntax-table
   (let ((syntax-table (make-syntax-table)))
     ;; Let `?` and `_` be part of a word so that a variable will be
@@ -264,20 +264,30 @@ asynchronously."
     (modify-syntax-entry ?? "w" syntax-table)
     (modify-syntax-entry ?_ "w" syntax-table)
 
-    ;; Comments
-    (modify-syntax-entry ?# "<" syntax-table)
-    (modify-syntax-entry ?\n ">" syntax-table)
-
     ;; Strings
     (modify-syntax-entry ?\' "\"'"  syntax-table)
     (modify-syntax-entry ?\" "\"\"" syntax-table)
-
-    ;; URIs
-    ;; Temporary fix to make # inside urls work better.
-    (modify-syntax-entry ?\< "|" syntax-table)
-    (modify-syntax-entry ?\> "|" syntax-table)
     syntax-table)
   "Syntax table for SPARQL-mode.")
+
+(defun sparql-syntax-propertize-function (start end)
+  (save-excursion
+   (goto-char start)
+   (while (search-forward "#" end t)
+     (let ((property (get-text-property (point) 'face)))
+       (unless (or (equal 'font-lock-constant-face property)
+		   (member 'font-lock-constant-face property))
+	 (backward-char)
+	 (put-text-property (point)
+			    (1+ (point))
+			    'syntax-table
+			    (string-to-syntax "<"))
+	 (end-of-line)
+	 (unless (eobp)
+	   (put-text-property (point)
+			      (1+ (point))
+			      'syntax-table
+			      (string-to-syntax ">"))))))))
 
 (defvar sparql-mode-map
   (let ((map (make-sparse-keymap)))
@@ -358,7 +368,9 @@ keywords."
         '(sparql-keywords
           nil ;; font-lock-keywords-only
           t   ;; font-lock-keywords-case-fold-search
-          )))
+          ))
+  (set (make-local-variable 'syntax-propertize-function)
+       #'sparql-syntax-propertize-function))
 
 (provide 'sparql-mode)
 
