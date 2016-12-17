@@ -79,7 +79,7 @@ variable."
     (insert body)
     (let ((case-fold-search nil)
 	  (case-replace nil))
-      (dolist (pair (mapcar #'cdr (org-babel-get-header params :var)))
+      (dolist (pair (mapcar #'cdr (org-babel--get-vars params)))
 	(goto-char (point-min))
 	(let ((regexp (concat "[$?]" (regexp-quote (format "%s" (car pair)))))
 	      (replacement (cdr pair)))
