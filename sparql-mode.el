@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 1.1.2
+;; Version: 1.1.3
 ;; Package-Requires: ((cl-lib "0.5") (async "1.6"))
 
 ;; This file is not part of GNU Emacs.
@@ -174,7 +174,7 @@ sparql endpoints expect that."
 			 (with-temp-buffer
 			   (if (and (<= 200 response) (<= response 299))
 			       (url-insert results)
-			     (insert results))
+			     (insert-buffer-substring results))
 			   (buffer-string)))))))
 	      (unless synch finish))))
     (when synch
