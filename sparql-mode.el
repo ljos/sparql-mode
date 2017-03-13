@@ -11,8 +11,8 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 1.1.3
-;; Package-Requires: ((cl-lib "0.5") (async "1.6"))
+;; Version: 2.0.0
+;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -45,6 +45,9 @@
 ;;; Code:
 (require 'async)
 (require 'cl-lib)
+(require 'url)
+(require 'url-vars)
+(require 'url-parse)
 (require 'url-handlers)
 
 (eval-when-compile
@@ -138,6 +141,22 @@ unless it has not been set, in which case it prompts the user."
   (or (and (not sparql-prompt-format) sparql-format)
       (command-execute 'sparql-set-format)))
 
+(defun sparql-handle-results (status &optional output-buffer)
+  "Handles the result that comes back from url-retrieve for a
+SPARQL query."
+  (let ((results-buffer (current-buffer))
+	(response (url-http-parse-response)))
+    status
+    (when (zerop (buffer-size))
+      (setq mode-name "SPARQL[error]")
+      (error "URL '%s' is not accessible" (url-recreate-url url-current-object)))
+    (with-current-buffer output-buffer
+      (let ((buffer-read-only nil))
+	(if (and (<= 200 response) (<= response 299))
+	    (url-insert results-buffer)
+	  (insert-buffer-substring results-buffer))
+	(setq mode-name "SPARQL[finished]")))))
+
 (defun sparql-execute-query (query &optional synch url format)
   "Submit the given `query' string to the endpoint at the given
 `url'.  `sparql-execute-query' inserts the result of the query
@@ -146,39 +165,19 @@ synchronously otherwise it is asynchronously.  `format' specifies
 the return format of the response from the server. Note: This
 uses the the mime accept header to set the format and not all
 sparql endpoints expect that."
-  (lexical-let*
-      ((result-buffer (current-buffer))
-       (endpoint-url (or url (sparql-get-base-url)))
-       (mime-accept-string (or format (sparql-get-format)))
-       (finish (lambda (result)
-		 (with-current-buffer result-buffer
-		   (when (null result)
-		     (setq mode-name "SPARQL[error]")
-		     (error "URL '%s' is not accessible" endpoint-url))
-		   (let ((buffer-read-only nil))
-		     (insert result))
-		   (setq mode-name "SPARQL[finished]"))))
-       (proc (async-start
-	      `(lambda ()
-		 (require 'url)
-		 (require 'url-handlers)
-		 (let ((url-request-method "POST")
-		       (url-request-extra-headers
-			'(("Content-Type" . "application/x-www-form-urlencoded")))
-		       (url-request-data ,(concat "query=" (url-hexify-string query)))
-		       (url-mime-accept-string ,mime-accept-string))
-		   (with-current-buffer (url-retrieve-synchronously ,endpoint-url)
-		     (ignore-errors
-		       (let ((results (current-buffer))
-			     (response (url-http-parse-response)))
-			 (with-temp-buffer
-			   (if (and (<= 200 response) (<= response 299))
-			       (url-insert results)
-			     (insert-buffer-substring results))
-			   (buffer-string)))))))
-	      (unless synch finish))))
-    (when synch
-      (funcall finish (async-get proc)))))
+  (let ((endpoint-url (or url (sparql-get-base-url)))
+	(url-mime-accept-string (or format (sparql-get-format)))
+	(url-request-method "POST")
+	(url-request-extra-headers
+	 '(("Content-Type" . "application/x-www-form-urlencoded")))
+	(url-request-data (concat "query=" (url-hexify-string query)))
+	(result-buffer (current-buffer)))
+    (if synch
+	(with-current-buffer (url-retrieve-synchronously endpoint-url)
+	  (sparql-handle-results nil result-buffer))
+      (url-retrieve endpoint-url
+		    #'sparql-handle-results
+		    (list result-buffer)))))
 
 (defun sparql-query-region (&optional synch)
   "Submit the active region as a query to a SPARQL HTTP endpoint.
