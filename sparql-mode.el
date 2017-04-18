@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 2.0.0
+;; Version: 2.0.1
 ;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -43,7 +43,6 @@
 ;;  (add-to-list 'auto-mode-alist '("\\.rq$" . sparql-mode))
 
 ;;; Code:
-(require 'async)
 (require 'cl-lib)
 (require 'url)
 (require 'url-vars)
