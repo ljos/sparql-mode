@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 2.0.1
+;; Version: 2.0.2
 ;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -143,12 +143,12 @@ unless it has not been set, in which case it prompts the user."
 (defun sparql-handle-results (status &optional output-buffer)
   "Handles the result that comes back from url-retrieve for a
 SPARQL query."
+  (when (zerop (buffer-size))
+    (setq mode-name "SPARQL[error]")
+    (error "URL '%s' is not accessible"
+	   (url-recreate-url url-current-object)))
   (let ((results-buffer (current-buffer))
 	(response (url-http-parse-response)))
-    status
-    (when (zerop (buffer-size))
-      (setq mode-name "SPARQL[error]")
-      (error "URL '%s' is not accessible" (url-recreate-url url-current-object)))
     (with-current-buffer output-buffer
       (let ((buffer-read-only nil))
 	(if (and (<= 200 response) (<= response 299))
