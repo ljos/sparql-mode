@@ -134,7 +134,7 @@
     #+BEGIN_SRC org
       ,#+NAME: count-statements-in-graph
       ,#+BEGIN_SRC sparql :var graph="<>"
-        SELECT COUNT(*) WHERE {
+        SELECT (COUNT(*) AS ?count) WHERE {
           GRAPH $graph {
             ?s ?p ?o .
           }
@@ -144,14 +144,18 @@
       ,#+CALL: count-statements-in-graph("<http://example.com/my-graph>")
 
       ,#+RESULTS:
-      : "callret-0"
-      : 1100
+      | count |
+      |-------|
+      |  1001 |
+
 
       ,#+CALL: count-statements-in-graph("<http://example.com/my-other-graph>")
 
       ,#+RESULTS:
-      : "callret-0"
-      : 100
+      | count |
+      |-------|
+      |   100 |
+
     #+END_SRC
 
     Notice that the server request is done synchronously and will
