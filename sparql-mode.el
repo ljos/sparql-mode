@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 2.0.2
+;; Version: 2.1.0
 ;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -243,11 +243,21 @@ asynchronously."
                           sparql-indent-offset)))
                 ((looking-at "(")
                  (setq indent-column
-                       (1+ (current-column))))))))
-    (when (looking-at "}")
-      (setq indent-column
-            (- indent-column
-               sparql-indent-offset)))
+                       (1+ (current-column))))
+		((looking-at "\\[")
+		 (forward-char)
+		 (skip-syntax-forward " " (line-end-position))
+		 (setq indent-column (+ (current-column)
+					(if (eolp) 1 0))))))))
+    (cond ((looking-at "}")
+	   (setq indent-column
+		 (- indent-column
+		    sparql-indent-offset)))
+	  ((looking-at "]")
+	   (setq indent-column
+		(save-excursion
+		  (backward-up-list)
+		  (current-column)))))
     (indent-line-to (or indent-column 0))))
 
 (defconst sparql-keywords
