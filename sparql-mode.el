@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 2.1.0
+;; Version: 2.1.1
 ;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -248,7 +248,9 @@ asynchronously."
 		 (forward-char)
 		 (skip-syntax-forward " " (line-end-position))
 		 (setq indent-column (+ (current-column)
-					(if (eolp) 1 0))))))))
+					(if (eolp)
+					    (1- sparql-indent-offset)
+					  0))))))))
     (cond ((looking-at "}")
 	   (setq indent-column
 		 (- indent-column
