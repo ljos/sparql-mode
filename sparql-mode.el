@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2011       Craig Andera
 ;; Copyright (C) 2013       Marcus Nitzschke
-;; Copyright (C) 2013--2016 Bjarte Johansen
+;; Copyright (C) 2013--2017 Bjarte Johansen
 ;; Copyright (C) 2013       Robert Syme
 ;; Copyright (C) 2014       Alex Tucker
 ;; Copyright (C) 2014       Jacek Grzebyta
@@ -312,46 +312,6 @@ asynchronously."
 
 (eval-after-load 'auto-complete-mode
   '(add-to-list 'ac-sources 'ac-source-sparql-mode))
-
-(defvar sparql-prefix-namespaces nil)
-(defvar company-sparql-use-prefixcc t)
-
-(defun company-sparql (command &optional arg &rest ignored)
-  "`company-mode' completion back-end for `sparql-mode'. Right
-now it only completes prefixes, `company-keywords' takes care of
-keywords."
-  (interactive (list 'interactive))
-  (cl-case command
-    (init (with-current-buffer (get-buffer-create "*SPARQL PREFIX*")
-            (when (zerop (buffer-size))
-              (when company-sparql-use-prefixcc
-                (let ((url-request-method "GET"))
-                  (url-insert
-                   (url-retrieve-synchronously
-                    "http://prefix.cc/popular/all.file.sparql" t)))
-                (goto-char (point-min))
-                (while (search-forward "PREFIX " nil t)
-                  (replace-match "")))
-              (dolist (prefix sparql-prefix-namespaces)
-                (insert prefix "\n"))
-              (sort-lines nil (point-min) (point-max))
-              (bury-buffer))))
-    (interactive (company-begin-backend 'company-sparql))
-    (prefix (and (eq major-mode 'sparql-mode)
-                 (< 0 (buffer-size
-                       (get-buffer "*SPARQL PREFIX*")))
-                 (let ((case-fold-search t))
-                   (looking-back "^\\s-*PREFIX \\(.*\\)"))
-                 (match-string 1)))
-    (candidates (cl-remove-if-not (lambda (c) (string-prefix-p arg c))
-                                  (with-current-buffer (get-buffer "*SPARQL PREFIX*")
-                                    (split-string (buffer-string) "\n" t))))
-    (require-match 'never)))
-
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-sparql))
-(eval-after-load 'company-keywords
-  '(add-to-list 'company-keywords-alist `(sparql-mode . ,sparql--keywords)))
 
 (define-derived-mode sparql-result-mode read-only-mode "SPARQL[waiting]"
   "Major mode to hold the result from the SPARQL-queries."
