@@ -5,6 +5,7 @@
   query other endpoints like [[http://dbpedia.org/sparql][DBPedia]].
 
 * Getting Started
+  [[https://melpa.org/#/sparql-mode][file:https://melpa.org/packages/sparql-mode-badge.svg]] [[https://stable.melpa.org/#/sparql-mode][file:https://stable.melpa.org/packages/sparql-mode-badge.svg]]
   - Download sparql-mode and put it in a directory somewhere.
   - Add the following to your .emacs file
 
