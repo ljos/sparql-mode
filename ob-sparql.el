@@ -7,7 +7,7 @@
 ;; Author: Bjarte Johansen
 ;; Keywords: literate programming, reproducible research
 ;; Homepage: http://www.github.com/ljos/sparql-mode
-;; Version: 1.1.1
+;; Version: 1.1.2
 
 ;;; License:
 
@@ -56,7 +56,7 @@ This function is called by `org-babel-execute-src-block'."
         (format (cdr (assoc :format params)))
         (query (org-babel-expand-body:sparql body params)))
     (with-temp-buffer
-      (sparql-execute-query query t url format)
+      (sparql-execute-query query url format t)
       (org-babel-result-cond
        (cdr (assoc :result-params params))
        (buffer-string)

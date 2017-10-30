@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 2.1.1
+;; Version: 3.0.0
 ;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -156,7 +156,7 @@ SPARQL query."
           (insert-buffer-substring results-buffer))
         (setq mode-name "SPARQL[finished]")))))
 
-(defun sparql-execute-query (query &optional synch url format)
+(defun sparql-execute-query (query url format synch)
   "Submit the given `query' string to the endpoint at the given
 `url'.  `sparql-execute-query' inserts the result of the query
 into the current buffer.  If `synch' is true the query is sent
@@ -164,19 +164,16 @@ synchronously otherwise it is asynchronously.  `format' specifies
 the return format of the response from the server. Note: This
 uses the the mime accept header to set the format and not all
 sparql endpoints expect that."
-  (let ((endpoint-url (or url (sparql-get-base-url)))
-        (url-mime-accept-string (or format (sparql-get-format)))
+  (let ((url-mime-accept-string (or format (sparql-get-format)))
         (url-request-method "POST")
         (url-request-extra-headers
          '(("Content-Type" . "application/x-www-form-urlencoded")))
         (url-request-data (concat "query=" (url-hexify-string query)))
         (result-buffer (current-buffer)))
     (if synch
-        (with-current-buffer (url-retrieve-synchronously endpoint-url)
+        (with-current-buffer (url-retrieve-synchronously url)
           (sparql-handle-results nil result-buffer))
-      (url-retrieve endpoint-url
-                    #'sparql-handle-results
-                    (list result-buffer)))))
+      (url-retrieve url #'sparql-handle-results (list result-buffer)))))
 
 (defun sparql-query-region (&optional synch)
   "Submit the active region as a query to a SPARQL HTTP endpoint.
@@ -186,7 +183,9 @@ asynchronously."
   (interactive "P")
   (let* ((beg (if (region-active-p) (region-beginning) (point-min)))
          (end (if (region-active-p) (region-end) (point-max)))
-         (query (buffer-substring-no-properties beg end)))
+         (query (buffer-substring-no-properties beg end))
+         (url (sparql-get-base-url))
+         (format (sparql-get-format)))
     (unless (and sparql-results-buffer
                  (buffer-live-p sparql-results-buffer))
       (setq sparql-results-buffer (get-buffer-create
@@ -196,7 +195,7 @@ asynchronously."
     (with-current-buffer sparql-results-buffer
       (let ((buffer-read-only nil))
         (delete-region (point-min) (point-max))
-        (sparql-execute-query query synch)))
+        (sparql-execute-query query url format synch)))
     (view-buffer-other-window sparql-results-buffer)
     (other-window -1)))
 
