@@ -54,15 +54,15 @@ This function is called by `org-babel-execute-src-block'."
   (message "Executing a SPARQL query block.")
   (let ((url (cdr (assoc :url params)))
         (format (cdr (assoc :format params)))
-	(query (org-babel-expand-body:sparql body params)))
+        (query (org-babel-expand-body:sparql body params)))
     (with-temp-buffer
       (sparql-execute-query query t url format)
       (org-babel-result-cond
        (cdr (assoc :result-params params))
        (buffer-string)
        (if (string-equal "text/csv" format)
-	   (org-babel-sparql-convert-to-table)
-	 (buffer-string))))))
+           (org-babel-sparql-convert-to-table)
+         (buffer-string))))))
 
 (defun org-babel-sparql-convert-to-table ()
   "Convert the results buffer to an org-table."
@@ -78,13 +78,13 @@ variable."
   (with-temp-buffer
     (insert body)
     (let ((case-fold-search nil)
-	  (case-replace nil))
+          (case-replace nil))
       (dolist (pair (org-babel--get-vars params))
-	(goto-char (point-min))
-	(let ((regexp (concat "[$?]" (regexp-quote (format "%s" (car pair)))))
-	      (replacement (cdr pair)))
-	  (while (re-search-forward regexp nil t)
-	    (replace-match replacement nil nil)))))
+        (goto-char (point-min))
+        (let ((regexp (concat "[$?]" (regexp-quote (format "%s" (car pair)))))
+              (replacement (cdr pair)))
+          (while (re-search-forward regexp nil t)
+            (replace-match replacement nil nil)))))
     (buffer-string)))
 
 (provide 'ob-sparql)

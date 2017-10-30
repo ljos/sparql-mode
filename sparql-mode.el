@@ -146,15 +146,15 @@ SPARQL query."
   (when (zerop (buffer-size))
     (setq mode-name "SPARQL[error]")
     (error "URL '%s' is not accessible"
-	   (url-recreate-url url-current-object)))
+           (url-recreate-url url-current-object)))
   (let ((results-buffer (current-buffer))
-	(response (url-http-parse-response)))
+        (response (url-http-parse-response)))
     (with-current-buffer output-buffer
       (let ((buffer-read-only nil))
-	(if (and (<= 200 response) (<= response 299))
-	    (url-insert results-buffer)
-	  (insert-buffer-substring results-buffer))
-	(setq mode-name "SPARQL[finished]")))))
+        (if (and (<= 200 response) (<= response 299))
+            (url-insert results-buffer)
+          (insert-buffer-substring results-buffer))
+        (setq mode-name "SPARQL[finished]")))))
 
 (defun sparql-execute-query (query &optional synch url format)
   "Submit the given `query' string to the endpoint at the given
@@ -165,18 +165,18 @@ the return format of the response from the server. Note: This
 uses the the mime accept header to set the format and not all
 sparql endpoints expect that."
   (let ((endpoint-url (or url (sparql-get-base-url)))
-	(url-mime-accept-string (or format (sparql-get-format)))
-	(url-request-method "POST")
-	(url-request-extra-headers
-	 '(("Content-Type" . "application/x-www-form-urlencoded")))
-	(url-request-data (concat "query=" (url-hexify-string query)))
-	(result-buffer (current-buffer)))
+        (url-mime-accept-string (or format (sparql-get-format)))
+        (url-request-method "POST")
+        (url-request-extra-headers
+         '(("Content-Type" . "application/x-www-form-urlencoded")))
+        (url-request-data (concat "query=" (url-hexify-string query)))
+        (result-buffer (current-buffer)))
     (if synch
-	(with-current-buffer (url-retrieve-synchronously endpoint-url)
-	  (sparql-handle-results nil result-buffer))
+        (with-current-buffer (url-retrieve-synchronously endpoint-url)
+          (sparql-handle-results nil result-buffer))
       (url-retrieve endpoint-url
-		    #'sparql-handle-results
-		    (list result-buffer)))))
+                    #'sparql-handle-results
+                    (list result-buffer)))))
 
 (defun sparql-query-region (&optional synch)
   "Submit the active region as a query to a SPARQL HTTP endpoint.
@@ -188,15 +188,15 @@ asynchronously."
          (end (if (region-active-p) (region-end) (point-max)))
          (query (buffer-substring-no-properties beg end)))
     (unless (and sparql-results-buffer
-		 (buffer-live-p sparql-results-buffer))
+                 (buffer-live-p sparql-results-buffer))
       (setq sparql-results-buffer (get-buffer-create
-				   (format "*SPARQL: %s*" (buffer-name))))
+                                   (format "*SPARQL: %s*" (buffer-name))))
       (with-current-buffer sparql-results-buffer
-	(sparql-result-mode)))
+        (sparql-result-mode)))
     (with-current-buffer sparql-results-buffer
       (let ((buffer-read-only nil))
-	(delete-region (point-min) (point-max))
-	(sparql-execute-query query synch)))
+        (delete-region (point-min) (point-max))
+        (sparql-execute-query query synch)))
     (view-buffer-other-window sparql-results-buffer)
     (other-window -1)))
 
@@ -232,7 +232,7 @@ asynchronously."
       (forward-line -1)
       (setq indent-column
             (string-match "\\S-+\\s-+\\S-+;\\s-*$"
-			  (thing-at-point 'line))))
+                          (thing-at-point 'line))))
     (save-excursion
       (ignore-errors
         (while (not indent-column)
@@ -244,22 +244,22 @@ asynchronously."
                 ((looking-at "(")
                  (setq indent-column
                        (1+ (current-column))))
-		((looking-at "\\[")
-		 (forward-char)
-		 (skip-syntax-forward " " (line-end-position))
-		 (setq indent-column (+ (current-column)
-					(if (eolp)
-					    (1- sparql-indent-offset)
-					  0))))))))
+                ((looking-at "\\[")
+                 (forward-char)
+                 (skip-syntax-forward " " (line-end-position))
+                 (setq indent-column (+ (current-column)
+                                        (if (eolp)
+                                            (1- sparql-indent-offset)
+                                          0))))))))
     (cond ((looking-at "}")
-	   (setq indent-column
-		 (- indent-column
-		    sparql-indent-offset)))
-	  ((looking-at "]")
-	   (setq indent-column
-		(save-excursion
-		  (backward-up-list)
-		  (current-column)))))
+           (setq indent-column
+                 (- indent-column
+                    sparql-indent-offset)))
+          ((looking-at "]")
+           (setq indent-column
+                 (save-excursion
+                   (backward-up-list)
+                   (current-column)))))
     (indent-line-to (or indent-column 0))))
 
 (defconst sparql-keywords
@@ -282,22 +282,22 @@ asynchronously."
 
 (defun sparql-syntax-propertize-function (start end)
   (save-excursion
-   (goto-char start)
-   (while (search-forward "#" end t)
-     (let ((property (get-text-property (point) 'face)))
-       (unless (or (equal 'font-lock-constant-face property)
-		   (member 'font-lock-constant-face property))
-	 (backward-char)
-	 (put-text-property (point)
-			    (1+ (point))
-			    'syntax-table
-			    (string-to-syntax "<"))
-	 (end-of-line)
-	 (unless (eobp)
-	   (put-text-property (point)
-			      (1+ (point))
-			      'syntax-table
-			      (string-to-syntax ">"))))))))
+    (goto-char start)
+    (while (search-forward "#" end t)
+      (let ((property (get-text-property (point) 'face)))
+        (unless (or (equal 'font-lock-constant-face property)
+                    (member 'font-lock-constant-face property))
+          (backward-char)
+          (put-text-property (point)
+                             (1+ (point))
+                             'syntax-table
+                             (string-to-syntax "<"))
+          (end-of-line)
+          (unless (eobp)
+            (put-text-property (point)
+                               (1+ (point))
+                               'syntax-table
+                               (string-to-syntax ">"))))))))
 
 (defvar sparql-mode-map
   (let ((map (make-sparse-keymap)))
