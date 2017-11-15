@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 3.0.0
+;; Version: 3.0.1
 ;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -262,7 +262,7 @@ asynchronously."
     (indent-line-to (or indent-column 0))))
 
 (defconst sparql-keywords
-  `(("<\\S-*>" 0 font-lock-constant-face t)
+  `(("<\\S-*>" 0 font-lock-constant-face)
     ("[$?]\\w+" 0 font-lock-variable-name-face)
     ,(concat "\\b" (regexp-opt sparql--keywords) "\\b")))
 
@@ -276,27 +276,26 @@ asynchronously."
     ;; Strings
     (modify-syntax-entry ?\' "\"'"  syntax-table)
     (modify-syntax-entry ?\" "\"\"" syntax-table)
+
+    ;; Comments
+    (modify-syntax-entry ?\n ">" syntax-table)
+    ;; See `sparql-syntax-propertize-function'for comment beginnings.
     syntax-table)
   "Syntax table for SPARQL-mode.")
 
 (defun sparql-syntax-propertize-function (start end)
-  (save-excursion
-    (goto-char start)
-    (while (search-forward "#" end t)
-      (let ((property (get-text-property (point) 'face)))
-        (unless (or (equal 'font-lock-constant-face property)
-                    (member 'font-lock-constant-face property))
-          (backward-char)
-          (put-text-property (point)
-                             (1+ (point))
-                             'syntax-table
-                             (string-to-syntax "<"))
-          (end-of-line)
-          (unless (eobp)
-            (put-text-property (point)
-                               (1+ (point))
-                               'syntax-table
-                               (string-to-syntax ">"))))))))
+  "We define a `syntax-propertize-function' that skips URLs
+because they can contain a #, but then adds the comment text
+property for all other #.  See `sparql-mode-syntax-table' for the
+definition of end of comment."
+  (goto-char start)
+  (while (and (< (point) end)
+              (re-search-forward "\\(<\\S-*>\\)\\|\\(#\\)" end t))
+    (when (match-beginning 2)
+      (put-text-property (match-beginning 2)
+                         (match-end 2)
+                         'syntax-table
+                         (string-to-syntax "<")))))
 
 (defvar sparql-mode-map
   (let ((map (make-sparse-keymap)))
