@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 3.0.1
+;; Version: 4.0.0
 ;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -88,9 +88,9 @@ evaluation."
   :group 'sparql
   :type 'boolean)
 
-(defvar sparql-results-buffer nil)
-(defvar sparql-base-url nil)
-(defvar sparql-format nil)
+(defvar-local sparql-results-buffer nil)
+(defvar-local sparql-base-url nil)
+(defvar-local sparql-format nil)
 
 (defvar sparql-base-url-history (list sparql-default-base-url))
 
@@ -227,12 +227,12 @@ asynchronously."
   (interactive)
   (back-to-indentation)
   (let (indent-column)
-    (save-excursion
+    (save-mark-and-excursion
       (forward-line -1)
       (setq indent-column
             (string-match "\\S-+\\s-+\\S-+;\\s-*$"
                           (thing-at-point 'line))))
-    (save-excursion
+    (save-mark-and-excursion
       (ignore-errors
         (while (not indent-column)
           (backward-up-list)
@@ -256,7 +256,7 @@ asynchronously."
                     sparql-indent-offset)))
           ((looking-at "]")
            (setq indent-column
-                 (save-excursion
+                 (save-mark-and-excursion
                    (backward-up-list)
                    (current-column)))))
     (indent-line-to (or indent-column 0))))
@@ -308,37 +308,29 @@ definition of end of comment."
 (defvar ac-source-sparql-mode
   `((candidates . ,sparql--keywords)))
 
-(eval-after-load 'auto-complete-mode
-  '(add-to-list 'ac-sources 'ac-source-sparql-mode))
+(with-eval-after-load "auto-complete-mode"
+  (add-to-list 'ac-sources 'ac-source-sparql-mode))
 
 (define-derived-mode sparql-result-mode read-only-mode "SPARQL[waiting]"
   "Major mode to hold the result from the SPARQL-queries."
   :group 'sparql-result-mode)
 
-;; Compatability with Emacs < 24
-(defalias 'sparql-parent-mode
-  (if (fboundp 'prog-mode) 'prog-mode 'fundamental-mode))
-
 ;;;###autoload
-(define-derived-mode sparql-mode sparql-parent-mode "SPARQL"
+(define-derived-mode sparql-mode prog-mode "SPARQL"
   "Major mode for SPARQL-queries.
 \\{sparql-mode-map}"
   :group 'sparql-mode
-  (make-local-variable 'sparql-base-url)
-  ;; Results buffer
-  (make-local-variable 'sparql-results-buffer)
   ;; Comments
-  (set (make-local-variable 'comment-start) "# ")
+  (setq-local comment-start "# ")
   ;; Indentation
-  (set (make-local-variable 'indent-line-function) 'sparql-indent-line)
+  (setq-local indent-line-function 'sparql-indent-line)
   ;; Font-lock support
   (setq font-lock-defaults
         '(sparql-keywords
           nil ;; font-lock-keywords-only
           t   ;; font-lock-keywords-case-fold-search
           ))
-  (set (make-local-variable 'syntax-propertize-function)
-       #'sparql-syntax-propertize-function))
+  (setq-local syntax-propertize-function #'sparql-syntax-propertize-function))
 
 (provide 'sparql-mode)
 
