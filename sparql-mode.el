@@ -279,23 +279,18 @@ asynchronously."
 
     ;; Comments
     (modify-syntax-entry ?\n ">" syntax-table)
-    ;; See `sparql-syntax-propertize-function'for comment beginnings.
+    ;; See `sparql-syntax-propertize-function' for comment beginnings.
     syntax-table)
   "Syntax table for SPARQL-mode.")
 
-(defun sparql-syntax-propertize-function (start end)
+(defvar sparql-syntax-propertize-function
+  (syntax-propertize-rules
+   ("<\\S-*>" (0 "@"))
+   ("#"       (0 "<")))
   "We define a `syntax-propertize-function' that skips URLs
 because they can contain a #, but then adds the comment text
 property for all other #.  See `sparql-mode-syntax-table' for the
-definition of end of comment."
-  (goto-char start)
-  (while (and (< (point) end)
-              (re-search-forward "\\(<\\S-*>\\)\\|\\(#\\)" end t))
-    (when (match-beginning 2)
-      (put-text-property (match-beginning 2)
-                         (match-end 2)
-                         'syntax-table
-                         (string-to-syntax "<")))))
+definition of end of comment.")
 
 (defvar sparql-mode-map
   (let ((map (make-sparse-keymap)))
@@ -330,7 +325,7 @@ definition of end of comment."
           nil ;; font-lock-keywords-only
           t   ;; font-lock-keywords-case-fold-search
           ))
-  (setq-local syntax-propertize-function #'sparql-syntax-propertize-function))
+  (setq-local syntax-propertize-function sparql-syntax-propertize-function))
 
 (provide 'sparql-mode)
 
