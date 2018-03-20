@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2011       Craig Andera
 ;; Copyright (C) 2013       Marcus Nitzschke
-;; Copyright (C) 2013--2017 Bjarte Johansen
+;; Copyright (C) 2013--2018 Bjarte Johansen
 ;; Copyright (C) 2013       Robert Syme
 ;; Copyright (C) 2014       Alex Tucker
 ;; Copyright (C) 2014       Jacek Grzebyta
@@ -11,8 +11,8 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 4.0.0
-;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
+;; Version: 4.0.1
+;; Package-Requires: ((cl-lib "0.5") (emacs "24.3"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -302,9 +302,6 @@ definition of end of comment.")
 
 (defvar ac-source-sparql-mode
   `((candidates . ,sparql--keywords)))
-
-(with-eval-after-load "auto-complete-mode"
-  (add-to-list 'ac-sources 'ac-source-sparql-mode))
 
 (define-derived-mode sparql-result-mode read-only-mode "SPARQL[waiting]"
   "Major mode to hold the result from the SPARQL-queries."
