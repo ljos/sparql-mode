@@ -8,6 +8,7 @@
 ;; Keywords: literate programming, reproducible research
 ;; Homepage: http://www.github.com/ljos/sparql-mode
 ;; Version: 1.1.2
+;; Package-Requires: ((emacs "24.3") (org "9"))
 
 ;;; License:
 

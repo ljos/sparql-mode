@@ -4,7 +4,7 @@
 
 ;; Author: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Package-Requires: ((cl-lib "0.5") (emacs "25.1"))
+;; Package-Requires: ((cl-lib "0.5") (company "0.9.0") (emacs "24.3"))
 
 ;; This file is not part of GNU Emacs.
 

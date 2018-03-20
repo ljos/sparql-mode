@@ -243,12 +243,12 @@ asynchronously."
   (interactive)
   (back-to-indentation)
   (let (indent-column)
-    (save-mark-and-excursion
+    (save-excursion
       (forward-line -1)
       (setq indent-column
             (string-match "\\S-+\\s-+\\S-+;\\s-*$"
                           (thing-at-point 'line))))
-    (save-mark-and-excursion
+    (save-excursion
       (ignore-errors
         (while (not indent-column)
           (backward-up-list)
@@ -272,7 +272,7 @@ asynchronously."
                     sparql-indent-offset)))
           ((looking-at "]")
            (setq indent-column
-                 (save-mark-and-excursion
+                 (save-excursion
                    (backward-up-list)
                    (current-column)))))
     (indent-line-to (or indent-column 0))))
