@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 4.0.1
+;; Version: 4.0.2
 ;; Package-Requires: ((cl-lib "0.5") (emacs "24.3"))
 
 ;; This file is not part of GNU Emacs.
@@ -156,6 +156,20 @@ SPARQL query."
           (insert-buffer-substring results-buffer))
         (setq mode-name "SPARQL[finished]")))))
 
+(defmacro when-emacs<25.1 (&rest body)
+  (when (version< emacs-version "25.1")
+    `(progn ,@body)))
+
+(when-emacs<25.1
+ (require 'url-http)
+ (defvar sparql--mime-format sparql-default-format)
+ (defadvice url-http-create-request (around sparql-set-mime-accept activate)
+   (if sparql--mime-format
+       (let ((url-mime-accept-string sparql--mime-format))
+         (setq sparql--mime-format nil)
+         ad-do-it)
+     ad-do-it)))
+
 (defun sparql-execute-query (query url format synch)
   "Submit the given `query' string to the endpoint at the given
 `url'.  `sparql-execute-query' inserts the result of the query
@@ -170,6 +184,8 @@ sparql endpoints expect that."
          '(("Content-Type" . "application/x-www-form-urlencoded")))
         (url-request-data (concat "query=" (url-hexify-string query)))
         (result-buffer (current-buffer)))
+    (when-emacs<25.1
+      (setq sparql--mime-format url-mime-accept-string))
     (if synch
         (with-current-buffer (url-retrieve-synchronously url)
           (sparql-handle-results nil result-buffer))
