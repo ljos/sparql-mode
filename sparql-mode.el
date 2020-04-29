@@ -288,6 +288,7 @@ asynchronously."
     ;; interpreted as a word.
     (modify-syntax-entry ?? "w" syntax-table)
     (modify-syntax-entry ?_ "w" syntax-table)
+    (modify-syntax-entry ?= "." syntax-table)
 
     ;; Strings
     (modify-syntax-entry ?\' "\"'"  syntax-table)
