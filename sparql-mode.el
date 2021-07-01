@@ -43,14 +43,16 @@
 ;;  (add-to-list 'auto-mode-alist '("\\.rq$" . sparql-mode))
 
 ;;; Code:
+(eval-when-compile
+  (if (version< emacs-version "26")
+      (require 'cl)
+    (require 'cl-lib)))
+
 (require 'cl-lib)
 (require 'url)
 (require 'url-vars)
 (require 'url-parse)
 (require 'url-handlers)
-
-(eval-when-compile
-  (require 'cl))
 
 (defgroup sparql nil
   "Major mode for editing and evaluating SPARQL queries."
