@@ -49,13 +49,17 @@
     (:format . ,sparql-default-format))
   "Default arguments for evaluating a SPARQL query block.")
 
+(defvar org-babel-sparql--current-curies nil
+  "Variable to pass curies from the org buffer to the table results buffer.")
+
 (defun org-babel-execute:sparql (body params)
   "Execute a block containing a SPARQL query with org-babel.
 This function is called by `org-babel-execute-src-block'."
   (message "Executing a SPARQL query block.")
   (let ((url (cdr (assoc :url params)))
         (format (cdr (assoc :format params)))
-        (query (org-babel-expand-body:sparql body params)))
+        (query (org-babel-expand-body:sparql body params))
+        (org-babel-sparql--current-curies (append org-link-abbrev-alist-local org-link-abbrev-alist)))
     (with-temp-buffer
       (sparql-execute-query query url format t)
       (org-babel-result-cond
@@ -65,11 +69,41 @@ This function is called by `org-babel-execute-src-block'."
            (org-babel-sparql-convert-to-table)
          (buffer-string))))))
 
+(defun org-babel-sparql--compact-uri (curies uri)
+  "Compact URI to curie given CURIES."
+  ;; FIXME this is SO badly implemented wow, use a trie or something
+  (let ((rest curies)
+        out)
+    (while rest
+      (let ((prefix (caar rest))
+            (namespace (cdar rest)))
+        (setq rest (cdr rest))
+        (when (string-prefix-p namespace uri)
+          (setq rest nil)
+          (setq out (concat prefix ":" (substring uri (length namespace)))))))
+    (if out
+        out
+      uri)))
+
+(defun org-babel-sparql--table-replace-curies (curies table)
+  (cl-loop for row in table
+           collect (cl-loop for cell in row
+                            collect (if (and (stringp cell)
+                                             (string-match "^https?:" cell))
+                                        (org-babel-sparql--compact-uri curies cell)
+                                      cell))))
+
 (defun org-babel-sparql-convert-to-table ()
   "Convert the results buffer to an org-table."
   (org-table-convert-region (point-min) (point-max) '(4))
-  (let ((table (org-table-to-lisp)))
-    (cons (car table) (cons 'hline (cdr table)))))
+  (let* ((table (org-table-to-lisp))
+         (data
+          (if org-babel-sparql--current-curies
+              (org-babel-sparql--table-replace-curies
+               org-babel-sparql--current-curies
+               (cdr table))
+            (cdr table))))
+    (cons (car table) (cons 'hline data))))
 
 (defun org-babel-expand-body:sparql (body params)
   "Expand BODY according to PARAMS, returning expanded body.
