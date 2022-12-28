@@ -11,7 +11,7 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 4.0.2
+;; Version: 4.0.3
 
 ;; Adaptation GJA-2022-10-09: switch between query= and update=
 
