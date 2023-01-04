@@ -210,7 +210,7 @@ sparql endpoints expect that."
          '(("Content-Type" . "application/x-www-form-urlencoded")))
         (url-request-data (concat url-request-command (url-hexify-string query)))
         (result-buffer (current-buffer)))
-    (run-hooks 'sparql-pre-qry-hook)
+    (run-hooks 'sparql-pre-query-hook)
     (when-emacs<25.1
       (setq sparql--mime-format url-mime-accept-string))
     (if synch
