@@ -94,7 +94,7 @@ evaluation."
   :type 'boolean)
 
 (defcustom sparql-post-string nil
-  "What is added to the front of the qry string.
+  "What is added to the front of the query string.
 For queries this is query=, for updates this needs to be set to update=.
 If nil the code below will use query=."
   :group 'sparql
