@@ -101,7 +101,7 @@ If nil the code below will use query=."
   :type 'string
   )
 
-(defcustom sparql-pre-qry-hook nil
+(defcustom sparql-pre-query-hook nil
   "*Hook to run just before sending a query to an endpoint."
   :type 'hook
   :group 'sparql)
