@@ -11,7 +11,10 @@
 ;; Author: Craig Andera <candera at wangdera dot com>
 ;; Maintainer: Bjarte Johansen <Bjarte dot Johansen at gmail dot com>
 ;; Homepage: https://github.com/ljos/sparql-mode
-;; Version: 4.0.2
+;; Version: 4.0.3
+
+;; Adaptation GJA-2022-10-09: switch between query= and update=
+
 ;; Package-Requires: ((cl-lib "0.5") (emacs "24.3"))
 
 ;; This file is not part of GNU Emacs.
@@ -63,7 +66,7 @@
   :group 'sparql
   :type 'integer)
 
-(defcustom sparql-default-base-url "http://localhost:2020/"
+(defcustom sparql-default-base-url "http://localhost:3030/"
   "The default URL of the SPARQL endpoint."
   :group 'sparql
   :type 'string)
@@ -89,6 +92,19 @@
 evaluation."
   :group 'sparql
   :type 'boolean)
+
+(defcustom sparql-post-string nil
+  "What is added to the front of the query string.
+For queries this is query=, for updates this needs to be set to update=.
+If nil the code below will use query=."
+  :group 'sparql
+  :type 'string
+  )
+
+(defcustom sparql-pre-query-hook nil
+  "*Hook to run just before sending a query to an endpoint."
+  :type 'hook
+  :group 'sparql)
 
 (defvar-local sparql-results-buffer nil)
 (defvar-local sparql-base-url nil)
@@ -142,6 +158,13 @@ unless it has not been set, in which case it prompts the user."
   (or (and (not sparql-prompt-format) sparql-format)
       (command-execute 'sparql-set-format)))
 
+(defun sparql-set-command (command)
+  "Set the COMMAND that is inserted in the request."
+  (interactive
+   (let* ((command (read-string (format "Post Command Prefix (%s): " sparql-post-string))))
+     (setq sparql-post-string command))))
+  
+
 (defun sparql-handle-results (status &optional output-buffer)
   "Handles the result that comes back from url-retrieve for a
 SPARQL query."
@@ -180,12 +203,14 @@ synchronously otherwise it is asynchronously.  `format' specifies
 the return format of the response from the server. Note: This
 uses the the mime accept header to set the format and not all
 sparql endpoints expect that."
-  (let ((url-mime-accept-string (or format (sparql-get-format)))
+  (let* ((url-mime-accept-string (or format (sparql-get-format)))
         (url-request-method "POST")
+	(url-request-command (if sparql-post-string sparql-post-string "query="))
         (url-request-extra-headers
          '(("Content-Type" . "application/x-www-form-urlencoded")))
-        (url-request-data (concat "query=" (url-hexify-string query)))
+        (url-request-data (concat url-request-command (url-hexify-string query)))
         (result-buffer (current-buffer)))
+    (run-hooks 'sparql-pre-query-hook)
     (when-emacs<25.1
       (setq sparql--mime-format url-mime-accept-string))
     (if synch
@@ -316,6 +341,7 @@ definition of end of comment.")
     (define-key map (kbd "C-c C-c") 'sparql-query-region)
     (define-key map (kbd "C-c C-u") 'sparql-set-base-url)
     (define-key map (kbd "C-c C-f") 'sparql-set-format)
+    (define-key map (kbd "C-c C-o") 'sparql-set-command)
     map)
   "Keymap for `sparql-mode'.")
 
