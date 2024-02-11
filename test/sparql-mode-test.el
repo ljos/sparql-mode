@@ -29,7 +29,7 @@
 (require 'json)
 
 (ert-deftest sparql-test-execute-query ()
-    "Send an asynchrounous query to a sparql endpoint."
+    "Send an asynchronous query to a sparql endpoint."
     (with-temp-buffer
       (let ((sparql-results-buffer (current-buffer))
 	    status
